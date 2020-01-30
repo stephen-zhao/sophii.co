@@ -1,19 +1,11 @@
-var getPrevIdx = function(idx) {
-  return (idx == 0) ? idx : idx - 1;
-}
-
-var getNextIdx = function(idx) {
-  return (idx == numCases - 1) ? idx : idx + 1;
-}
-
-var useIsInGalleryCaseChecker = function(scrollPosition, viewSize) {
+var useIsViewingElemInSeqChecker = function(elemClass, scrollPosition, viewSize) {
   var scrollStart = scrollPosition;
   var scrollMiddle = scrollPosition + viewSize/2;
   var scrollEnd = scrollPosition + viewSize;
   return function(i) {
-    var numCases = $(".fake-gallery-case").length;
-    var case_ = $(".fake-gallery-case[data-key="+i+"]");
-    var nextCase_ = $(".fake-gallery-case[data-key="+(i+1)+"]");
+    var numCases = $(elemClass).length;
+    var case_ = $(elemClass+"[data-key="+i+"]");
+    var nextCase_ = $(elemClass+"[data-key="+(i+1)+"]");
     // For the first case, check if
     //    (a) case started to enter view
     //    (b) middle of window is before the start of the next case
@@ -37,14 +29,17 @@ var useIsInGalleryCaseChecker = function(scrollPosition, viewSize) {
 
 var useGalleryVisualStateHandler = function(window) {
   return function(e) {
-    var isInCase = useIsInGalleryCaseChecker($(window).scrollTop(), $(window).height());
+    var isInCase = useIsViewingElemInSeqChecker(".fake-gallery-case", $(window).scrollTop(), $(window).height());
     var numCases = $(".fake-gallery-case").length;
     for (var idx = 0; idx < numCases; ++idx) {
       if (isInCase(idx)) {
+        // Grab neighbouring indexes
+        var prevIdx = (idx == 0) ? idx : idx - 1;
+        var nextIdx = (idx == numCases - 1) ? idx : idx + 1;
         // Grab the Ids
-        var prevId = "#" + $(".fake-gallery-case[data-key="+getPrevIdx(idx)+"]").attr("id");
+        var prevId = "#" + $(".fake-gallery-case[data-key="+prevIdx+"]").attr("id");
         var thisId = "#" + $(".fake-gallery-case[data-key="+idx+"]").attr("id");
-        var nextId = "#" + $(".fake-gallery-case[data-key="+getNextIdx(idx)+"]").attr("id");
+        var nextId = "#" + $(".fake-gallery-case[data-key="+nextIdx+"]").attr("id");
         // Give the arrows their respective links
         $(".gallery-case-scroll-arrow.left").attr("href", prevId);
         $(".gallery-case-scroll-arrow.right").attr("href", nextId);
