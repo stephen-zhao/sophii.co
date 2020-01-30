@@ -1,7 +1,17 @@
-var useIsViewingElemInSeqChecker = function(elemClass, scrollPosition, viewSize) {
+var useIsViewingElemInSeqChecker = function(elemClass, scrollPosition, viewSize, isGlobal, isVertical) {
   var scrollStart = scrollPosition;
   var scrollMiddle = scrollPosition + viewSize/2;
   var scrollEnd = scrollPosition + viewSize;
+
+  var posFn = isGlobal ? "offset" : "position";
+  var offsetField = isVertical ? "top" : "left";
+  var sizeFn = isVertical ? "height" : "width";
+  var getPosition = function(elem) {
+    return elem[posFn]()[offsetField] + (isGlobal) ? 0 : scrollStart;
+  }
+  var getSize = function(elem) {
+    return elem[sizeFn]();
+  }
   return function(i) {
     var numCases = $(elemClass).length;
     var case_ = $(elemClass+"[data-key="+i+"]");
@@ -10,26 +20,30 @@ var useIsViewingElemInSeqChecker = function(elemClass, scrollPosition, viewSize)
     //    (a) case started to enter view
     //    (b) middle of window is before the start of the next case
     if (i == 0) {
-      return case_.offset().top <= scrollEnd && scrollMiddle < nextCase_.offset().top;
+      return getPosition(case_) <= scrollEnd && scrollMiddle < getPosition(nextCase_);
     }
     // For the last case, check if
     //    (a) middle of window is past the start of case
     //    (b) case has not fully left view
     else if (i == numCases - 1) {
-      return case_.offset().top <= scrollMiddle && scrollStart < case_.offset().top + case_.height();
+      return getPosition(case_) <= scrollMiddle && scrollStart < getPosition(case_) + getSize(case_);
     }
     // Otherwise, for non-terminal cases, check if
     //    (a) middle of window is past the start of case
     //    (b) middle of window is before the start of the next case
     else {
-      return case_.offset().top <= scrollMiddle && scrollMiddle < nextCase_.offset().top;
+      return getPosition(case_) <= scrollMiddle && scrollMiddle < getPosition(nextCase_);
     }
   };
 };
 
 var useGalleryVisualStateHandler = function(window) {
   return function(e) {
-    var isInCase = useIsViewingElemInSeqChecker(".fake-gallery-case", $(window).scrollTop(), $(window).height());
+    var isInCase = useIsViewingElemInSeqChecker(
+      ".fake-gallery-case",
+      $(window).scrollTop(),
+      $(window).height(),
+      true, true);
     var numCases = $(".fake-gallery-case").length;
     for (var idx = 0; idx < numCases; ++idx) {
       if (isInCase(idx)) {
@@ -59,66 +73,34 @@ var useGalleryVisualStateHandler = function(window) {
 
 var useTabletGalleryVisualStateHandler = function(galleryTrackContainer) {
   return function(e) {
-    var arrowClass = ".tablet-gallery-case-scroll-arrow";
-    var scrollLeft = $(galleryTrackContainer).scrollLeft();
-    var scrollMiddle = scrollLeft + $(galleryTrackContainer).width() / 2;
-
-    var caseALeft = $('#Tablet-Case-A').position().left + scrollLeft;
-    var caseBLeft = $('#Tablet-Case-B').position().left + scrollLeft;
-    var caseCLeft = $('#Tablet-Case-C').position().left + scrollLeft;
-    var caseDLeft = $('#Tablet-Case-D').position().left + scrollLeft;
-
-    var boundaryAB = caseBLeft;
-    var boundaryBC = caseCLeft;
-    var boundaryCD = caseDLeft;
-
-    // Between top of A and boundary of A-B
-    if (scrollMiddle < boundaryAB) {
-      $(arrowClass+".left").attr("href", "#Tablet-Case-A");
-      $(arrowClass+".right").attr("href", "#Tablet-Case-B");
-      $(arrowClass+".left").css("visibility", "hidden");
-      // switch to A circle link line
-      $(".tablet-gallery-case-scroll-circles[href!='#Tablet-Case-A'] .circle-link-line").css("height", "0");
-      $(".tablet-gallery-case-scroll-circles[href='#Tablet-Case-A'] .circle-link-line").css("height", "12vh");
-      // switch to C circle
-      $(".tablet-gallery-case-scroll-circles[href!='#Tablet-Case-A']").css("background-color", "");
-      $(".tablet-gallery-case-scroll-circles[href='#Tablet-Case-A']").css("background-color", "#ff8e9b");
-    }
-    // Between boundary of A-B and boundary of B-C
-    else if (boundaryAB <= scrollMiddle && scrollMiddle < boundaryBC) {
-      $(arrowClass+".left").attr("href", "#Tablet-Case-A");
-      $(arrowClass+".right").attr("href", "#Tablet-Case-C");
-      $(arrowClass).css("visibility", "visible");
-      // switch to B circle link line
-      $(".tablet-gallery-case-scroll-circles[href!='#Tablet-Case-B'] .circle-link-line").css("height", "0");
-      $(".tablet-gallery-case-scroll-circles[href='#Tablet-Case-B'] .circle-link-line").css("height", "12vh");
-      // switch to C circle
-      $(".tablet-gallery-case-scroll-circles[href!='#Tablet-Case-B']").css("background-color", "");
-      $(".tablet-gallery-case-scroll-circles[href='#Tablet-Case-B']").css("background-color", "#ff8e9b");
-    }
-    // Between boundary of B-C and boundary of C-D
-    else if (boundaryBC <= scrollMiddle && scrollMiddle < boundaryCD) { 
-      $(arrowClass+".left").attr("href", "#Tablet-Case-B");
-      $(arrowClass+".right").attr("href", "#Tablet-Case-D");
-      $(arrowClass).css("visibility", "visible");
-      // switch to C circle link line
-      $(".tablet-gallery-case-scroll-circles[href!='#Tablet-Case-C'] .circle-link-line").css("height", "0");
-      $(".tablet-gallery-case-scroll-circles[href='#Tablet-Case-C'] .circle-link-line").css("height", "12vh");
-      // switch to C circle
-      $(".tablet-gallery-case-scroll-circles[href!='#Tablet-Case-C']").css("background-color", "");
-      $(".tablet-gallery-case-scroll-circles[href='#Tablet-Case-C']").css("background-color", "#ff8e9b");
-    }
-    // Between boundary of C-D
-    else if (boundaryCD <= scrollMiddle) {
-      $(arrowClass+".left").attr("href", "#Tablet-Case-C");
-      $(arrowClass+".right").attr("href", "#Tablet-Case-D");
-      $(arrowClass+".right").css("visibility", "hidden");
-      // switch to D circle link line
-      $(".tablet-gallery-case-scroll-circles[href!='#Tablet-Case-D'] .circle-link-line").css("height", "0");
-      $(".tablet-gallery-case-scroll-circles[href='#Tablet-Case-D'] .circle-link-line").css("height", "12vh");
-      // switch to D circle
-      $(".tablet-gallery-case-scroll-circles[href!='#Tablet-Case-D']").css("background-color", "");
-      $(".tablet-gallery-case-scroll-circles[href='#Tablet-Case-D']").css("background-color", "#ff8e9b");
+    var isInCase = useIsViewingElemInSeqChecker(
+      ".tablet-gallery-case",
+      $(galleryTrackContainer).scrollLeft(),
+      $(galleryTrackContainer).width(),
+      false, false);
+    var numCases = $(".tablet-gallery-case").length;
+    for (var idx = 0; idx < numCases; ++idx) {
+      if (isInCase(idx)) {
+        // Grab neighbouring indexes
+        var prevIdx = (idx == 0) ? idx : idx - 1;
+        var nextIdx = (idx == numCases - 1) ? idx : idx + 1;
+        // Grab the Ids
+        var prevId = "#" + $(".tablet-gallery-case[data-key="+prevIdx+"]").attr("id");
+        var thisId = "#" + $(".tablet-gallery-case[data-key="+idx+"]").attr("id");
+        var nextId = "#" + $(".tablet-gallery-case[data-key="+nextIdx+"]").attr("id");
+        // Give the arrows their respective links
+        $(".tablet-gallery-case-scroll-arrow.left").attr("href", prevId);
+        $(".tablet-gallery-case-scroll-arrow.right").attr("href", nextId);
+        // Make the arrows visible/invisible accordingly
+        $(".tablet-gallery-case-scroll-arrow.left").css("visibility", (idx == 0) ? "hidden" : "visible");
+        $(".tablet-gallery-case-scroll-arrow.right").css("visibility", (idx == (numCases - 1)) ? "hidden" : "visible");
+        // Switch the circle link line to the correct one
+        $(".tablet-gallery-case-scroll-circles[href!='"+thisId+"'] .circle-link-line").css("height", "0");
+        $(".tablet-gallery-case-scroll-circles[href='"+thisId+"'] .circle-link-line").css("height", "12vh");
+        // Switch the circle to the correct one
+        $(".tablet-gallery-case-scroll-circles[href!='"+thisId+"']").css("background-color", "");
+        $(".tablet-gallery-case-scroll-circles[href='"+thisId+"']").css("background-color", "#ff8e9b");
+      }
     }
   };
 };
