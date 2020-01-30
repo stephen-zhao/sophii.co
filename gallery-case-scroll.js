@@ -7,7 +7,7 @@ var useIsViewingElemInSeqChecker = function(elemClass, scrollPosition, viewSize,
   var offsetField = isVertical ? "top" : "left";
   var sizeFn = isVertical ? "height" : "width";
   var getPosition = function(elem) {
-    return elem[posFn]()[offsetField] + (isGlobal) ? 0 : scrollStart;
+    return elem[posFn]()[offsetField] + (isGlobal ? 0 : scrollStart);
   }
   var getSize = function(elem) {
     return elem[sizeFn]();
