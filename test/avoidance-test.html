@@ -1,0 +1,81 @@
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="../src/scripts/avoidance.js"></script>
+    <script>
+      $(function() {
+        new Avoidance("#my_container").start();
+      })
+    </script>
+    <style>
+      #my_container {
+        position: absolute;
+        top: 100px;
+        left: 100px;
+        width: 500px;
+        height: 500px;
+        border: 2px solid darkgreen;
+      }
+
+      #my_container>div {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background-color: orangered;
+      }
+
+      #inner_0 {
+        top: 350px;
+        left: 40px;
+      }
+      
+      #inner_1 {
+        top: 50px;
+        left: 70px;
+      }
+      
+      #inner_2 {
+        top: 420px;
+        left: 180px;
+      }
+
+      #inner_3 {
+        top: 280px;
+        left: 240px;
+      }
+      
+      #inner_4 {
+        top: 90px;
+        left: 360px;
+      }
+      
+      #inner_5 {
+        top: 110px;
+        left: 110px;
+      }
+      
+      #inner_6 {
+        top: 450px;
+        left: 320px;
+      }
+      
+      #inner_7 {
+        top: 290px;
+        left: 190px;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div id="my_container">
+      <div id="inner_0"></div>
+      <div id="inner_1"></div>
+      <div id="inner_2"></div>
+      <div id="inner_3"></div>
+      <div id="inner_4"></div>
+      <div id="inner_5"></div>
+      <div id="inner_6"></div>
+      <div id="inner_7"></div>
+    </div>
+  </body>
+</html>
