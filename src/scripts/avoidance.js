@@ -89,33 +89,33 @@ Avoidance.calculateAvoidanceFactor.builtinMethods = {
   }
 }
 
-Avoidance.calculateAvoidanceDisplacement = function(childPosRelToMousePos, avoidanceFactor, method) {
+Avoidance.calculateAvoidanceDisplacement = function(particleOrigPosRelMouse, avoidanceFactor, method) {
   // TODO: take into account the element size (and therefore centre)
   if (typeof method === "function") {
-    return method(childPosRelToMousePos, avoidanceFactor)
+    return method(particleOrigPosRelMouse, avoidanceFactor)
   }
   else if (typeof method === "string" && method in Avoidance.calculateAvoidanceDisplacement.builtinMethods) {
 
-    return Avoidance.calculateAvoidanceDisplacement.builtinMethods[method]()(childPosRelToMousePos, avoidanceFactor);
+    return Avoidance.calculateAvoidanceDisplacement.builtinMethods[method]()(particleOrigPosRelMouse, avoidanceFactor);
   }
   else {
-    return Avoidance.calculateAvoidanceDisplacement.builtinMethods.threshold_proportional_radius()(childPosRelToMousePos, avoidanceFactor);
+    return Avoidance.calculateAvoidanceDisplacement.builtinMethods.threshold_proportional_radius()(particleOrigPosRelMouse, avoidanceFactor);
   }
 }
 
 Avoidance.calculateAvoidanceDisplacement.builtinMethods = {
   "threshold_absolute_radius": function(param_threshold_radius=100.0) {
-    return function(childPosRelToMousePos, avoidanceFactor) {
+    return function(particleOrigPosRelMouse, avoidanceFactor) {
       var offset = {
-        x: childPosRelToMousePos.x*avoidanceFactor,
-        y: childPosRelToMousePos.y*avoidanceFactor,
+        x: particleOrigPosRelMouse.x*avoidanceFactor,
+        y: particleOrigPosRelMouse.y*avoidanceFactor,
       };
       if (Avoidance.geometry.getRadius(offset) > param_threshold_radius) {
-        var origRadius = Avoidance.geometry.getRadius(childPosRelToMousePos);
+        var origRadius = Avoidance.geometry.getRadius(particleOrigPosRelMouse);
         var scaleFactor = (param_threshold_radius / origRadius);
         return {
-          x: childPosRelToMousePos.x*scaleFactor,
-          y: childPosRelToMousePos.y*scaleFactor,
+          x: particleOrigPosRelMouse.x*scaleFactor,
+          y: particleOrigPosRelMouse.y*scaleFactor,
         };
       }
       else {
@@ -124,15 +124,15 @@ Avoidance.calculateAvoidanceDisplacement.builtinMethods = {
     }
   },
   "threshold_proportional_radius": function(param_threshold_radius=20.0) {
-    return function(childPosRelToMousePos, avoidanceFactor) {
+    return function(particleOrigPosRelMouse, avoidanceFactor) {
       var offset = {
-        x: childPosRelToMousePos.x*avoidanceFactor,
-        y: childPosRelToMousePos.y*avoidanceFactor,
+        x: particleOrigPosRelMouse.x*avoidanceFactor,
+        y: particleOrigPosRelMouse.y*avoidanceFactor,
       };
       if (avoidanceFactor > param_threshold_radius) {
         return {
-          x: childPosRelToMousePos.x*param_threshold_radius,
-          y: childPosRelToMousePos.y*param_threshold_radius,
+          x: particleOrigPosRelMouse.x*param_threshold_radius,
+          y: particleOrigPosRelMouse.y*param_threshold_radius,
         };
       }
       else {
@@ -141,10 +141,10 @@ Avoidance.calculateAvoidanceDisplacement.builtinMethods = {
     }
   },
   "standard": function() {
-    return function(childPosRelToMousePos, avoidanceFactor) {
+    return function(particleOrigPosRelMouse, avoidanceFactor) {
       return {
-        x: childPosRelToMousePos.x*avoidanceFactor,
-        y: childPosRelToMousePos.y*avoidanceFactor,
+        x: particleOrigPosRelMouse.x*avoidanceFactor,
+        y: particleOrigPosRelMouse.y*avoidanceFactor,
       };
     }
   }
@@ -158,31 +158,31 @@ Avoidance.mouseMoveHandler = function(event) {
   // Determine the relative x and y of mouse position inside the container
   var mousePos = { x: event.pageX - containerX, y: event.pageY - containerY };
   $container.children().each(function() {
-    var childPos = {
+    var particleOrigPos = {
       x: parseInt(this.dataset.zhaostephenAvoidanceOrigx),
       y: parseInt(this.dataset.zhaostephenAvoidanceOrigy),
     };
-    var childSize = { width: this.offsetWidth, height: this.offsetHeight };
-    var origDist = Avoidance.geometry.getDistance(mousePos, childPos);
-    var avoidanceFactor = Avoidance.calculateAvoidanceFactor(origDist, childSize, containerSize);
+    var particleSize = { width: this.offsetWidth, height: this.offsetHeight };
+    var particleOrigPosRelMouse = {
+      x: particleOrigPos.x - mousePos.x,
+      y: particleOrigPos.y - mousePos.y,
+    };
+    var particleOrigDistance = Avoidance.geometry.getRadius(particleOrigPosRelMouse);
+    var avoidanceFactor = Avoidance.calculateAvoidanceFactor(particleOrigDistance, particleSize, containerSize);
     if (avoidanceFactor === NaN) {
       this.style.display = "none";
     }
     else {
-      var childRelPos = {
-        x: childPos.x - mousePos.x,
-        y: childPos.y - mousePos.y,
-      };
-      var avoidanceDisplacement = Avoidance.calculateAvoidanceDisplacement(childRelPos, avoidanceFactor);
-      var newChildPos = {
-        x: childPos.x + avoidanceDisplacement.x,
-        y: childPos.y + avoidanceDisplacement.y,
+      var avoidanceDisplacement = Avoidance.calculateAvoidanceDisplacement(particleOrigPosRelMouse, avoidanceFactor);
+      var newParticlePos = {
+        x: particleOrigPos.x + avoidanceDisplacement.x,
+        y: particleOrigPos.y + avoidanceDisplacement.y,
       };
       if (this.style.display === "none") {
         this.style.display = "";
       }
-      this.style.left = newChildPos.x;
-      this.style.top = newChildPos.y;
+      this.style.left = newParticlePos.x;
+      this.style.top = newParticlePos.y;
     }
   });
 }
