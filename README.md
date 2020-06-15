@@ -25,6 +25,9 @@ Both scripts currently require `jQuery`, so it must be imported before any [soph
 - `avoidance.js`:
   - needs a major performance revamp
   - needs to support adding/removing tracked elements
+  - support passing custom parameters to avoidance effect
+  - support rotation animation
+  - support element size / centre of gravity
 - `gallery-case-scroll.js`:
   - needs library-ification
 - general:
