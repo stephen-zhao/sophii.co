@@ -1,6 +1,6 @@
 # sophii.co working files
 
-This repo is a collection of javascript files to support the website [sophii.co].
+This repo is a collection of javascript files to support the website [sophii.co](sophii.co).
 
 ## Usage
 
@@ -18,7 +18,7 @@ For the latest version of `gallery-case-scroll.js` (currently unavailable as a g
 <script src="https://cdn.jsdelivr.net/gh/stephen-zhao/sophii.co/dist/gallery-case-scroll-v0.3.2.txt">
 ```
 
-Both scripts currently require `jQuery`, so it must be imported before any [sophii.co] scripts are sourced. See [https://code.jquery.com/].
+Both scripts currently require `jQuery`, so it must be imported before any [sophii.co](sophii.co) scripts are sourced. See <https://code.jquery.com/>.
 
 ## Roadmap
 
