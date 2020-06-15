@@ -43,13 +43,35 @@ Avoidance.getDistance = function(pointA, pointB) {
   return Math.sqrt(Math.pow(pointA.x - pointB.x, 2) + Math.pow(pointA.y - pointB.y, 2));
 }
 
-Avoidance.calculateAvoidanceFactor = function(originalDistance, elementSize, containerSize) {
-  // TODO: take into account size and original distance
-  if (originalDistance === 0) {
-    return NaN;
+Avoidance.calculateAvoidanceFactor = function(originalDistance, elementSize, containerSize, method) {
+  // TODO: take into account the element size (and therefore centre)
+  if (typeof method === "function") {
+    return method(originalDistance, elementSize, containerSize)
+  }
+  else if (typeof method === "string" && method in Avoidance.calculateAvoidanceFactor.builtinMethods) {
+
+    return Avoidance.calculateAvoidanceFactor.builtinMethods[method](originalDistance, elementSize, containerSize);
   }
   else {
-    return (containerSize.width*0.2)/originalDistance + 0.5;
+    return Avoidance.calculateAvoidanceFactor.builtinMethods.inverse(originalDistance, elementSize, containerSize);
+  }
+}
+
+Avoidance.calculateAvoidanceFactor.builtinMethods = {
+  "inverse": function(param_scale=0.05, param_offset=1.0) {
+    return function(originalDistance, elementSize, containerSize) {
+      if (originalDistance === 0) {
+        return NaN;
+      }
+      else {
+        return (containerSize.width*param_scale)/originalDistance + param_offset;
+      }
+    }
+  },
+  "exponential": function(param_scale=0.01, param_offset=0.25) {
+    return function(originalDistance, elementSize, containerSize) {
+      return Math.exp(param_scale-originalDistance/containerSize.width) + param_offset;
+    }
   }
 }
 
