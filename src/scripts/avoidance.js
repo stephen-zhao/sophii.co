@@ -13,9 +13,8 @@ var Avoidance = function(containerSelector, options) {
   // TODO: support children being added to/removed from the container
   var $container = $(this.containerSelector);
   $container.children().each(function() {
-    var $child = $(this);
-    $child.data("zhaostephen.avoidance.origx", $child.position().left);
-    $child.data("zhaostephen.avoidance.origy", $child.position().top);
+    this.dataset.zhaostephenAvoidanceOrigx = this.offsetLeft;
+    this.dataset.zhaostephenAvoidanceOrigy = this.offsetTop;
   });
 }
 
@@ -50,10 +49,10 @@ Avoidance.calculateAvoidanceFactor = function(originalDistance, elementSize, con
   }
   else if (typeof method === "string" && method in Avoidance.calculateAvoidanceFactor.builtinMethods) {
 
-    return Avoidance.calculateAvoidanceFactor.builtinMethods[method](originalDistance, elementSize, containerSize);
+    return Avoidance.calculateAvoidanceFactor.builtinMethods[method]()(originalDistance, elementSize, containerSize);
   }
   else {
-    return Avoidance.calculateAvoidanceFactor.builtinMethods.inverse(originalDistance, elementSize, containerSize);
+    return Avoidance.calculateAvoidanceFactor.builtinMethods.inverse()(originalDistance, elementSize, containerSize);
   }
 }
 
@@ -84,7 +83,10 @@ Avoidance.mouseMoveHandler = function(event) {
   var mousePos = { x: event.pageX - containerX, y: event.pageY - containerY };
   $container.children().each(function() {
     var $child = $(this);
-    var childPos = { x: $child.data("zhaostephen.avoidance.origx"), y: $child.data("zhaostephen.avoidance.origy") };
+    var childPos = {
+      x: parseInt(this.dataset.zhaostephenAvoidanceOrigx),
+      y: parseInt(this.dataset.zhaostephenAvoidanceOrigy),
+    };
     var childSize = { width: $child.width(), height: $child.height() };
     var origDist = Avoidance.getDistance(mousePos, childPos);
     var scaleFactor = Avoidance.calculateAvoidanceFactor(origDist, childSize, containerSize);
@@ -94,7 +96,7 @@ Avoidance.mouseMoveHandler = function(event) {
     else {
       var newChildPos = {
         x: mousePos.x + (childPos.x - mousePos.x)*scaleFactor,
-        y: mousePos.y + (childPos.y - mousePos.y)*scaleFactor
+        y: mousePos.y + (childPos.y - mousePos.y)*scaleFactor,
       };
       $child.show(0);
       $child.css("left", newChildPos.x);
