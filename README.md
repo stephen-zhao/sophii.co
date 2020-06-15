@@ -23,11 +23,12 @@ Both scripts currently require `jQuery`, so it must be imported before any [soph
 ## Roadmap
 
 - `avoidance.js`:
-  - needs a major performance revamp
+  - needs a major performance revamp (>50 particles)
   - needs to support adding/removing tracked elements
   - support passing custom parameters to avoidance effect
   - support rotation animation
   - support element size / centre of gravity
+  - add typedefs in typescript (especially for the API)
 - `gallery-case-scroll.js`:
   - needs library-ification
 - general:

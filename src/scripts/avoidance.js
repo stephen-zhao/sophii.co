@@ -30,14 +30,6 @@ Avoidance.getCentre = function($element, $relativeTo) {
   };
 }
 
-// Avoidance.getRelativeX = function($element, $relativeTo) {
-//   return $element.offset().left - ($relativeTo ? $relativeTo.offset().left : 0);
-// }
-
-// Avoidance.getRelativeY = function($element, $relativeTo) {
-//   return $element.offset().top - ($relativeTo ? $relativeTo.offset().top : 0);
-// }
-
 Avoidance.geometry = {
   getDistance: function(pointA, pointB) {
     return Math.sqrt(Math.pow(pointA.x - pointB.x, 2) + Math.pow(pointA.y - pointB.y, 2));
@@ -90,7 +82,6 @@ Avoidance.calculateAvoidanceFactor.builtinMethods = {
 }
 
 Avoidance.calculateAvoidanceDisplacement = function(particleOrigPosRelMouse, avoidanceFactor, method) {
-  // TODO: take into account the element size (and therefore centre)
   if (typeof method === "function") {
     return method(particleOrigPosRelMouse, avoidanceFactor)
   }
