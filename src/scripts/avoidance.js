@@ -57,13 +57,13 @@ Avoidance.calculateAvoidanceFactor = function(originalDistance, elementSize, con
 }
 
 Avoidance.calculateAvoidanceFactor.builtinMethods = {
-  "inverse": function(param_scale=0.05, param_offset=1.0) {
+  "inverse": function(param_scale=0.1, param_offset=1.0) {
     return function(originalDistance, elementSize, containerSize) {
       if (originalDistance === 0) {
         return NaN;
       }
       else {
-        return (containerSize.width*param_scale)/originalDistance + param_offset;
+        return ((containerSize.width*param_scale)/originalDistance + param_offset);
       }
     }
   },
@@ -82,25 +82,26 @@ Avoidance.mouseMoveHandler = function(event) {
   // Determine the relative x and y of mouse position inside the container
   var mousePos = { x: event.pageX - containerX, y: event.pageY - containerY };
   $container.children().each(function() {
-    var $child = $(this);
     var childPos = {
       x: parseInt(this.dataset.zhaostephenAvoidanceOrigx),
       y: parseInt(this.dataset.zhaostephenAvoidanceOrigy),
     };
-    var childSize = { width: $child.width(), height: $child.height() };
+    var childSize = { width: this.offsetWidth, height: this.offsetHeight };
     var origDist = Avoidance.getDistance(mousePos, childPos);
     var scaleFactor = Avoidance.calculateAvoidanceFactor(origDist, childSize, containerSize);
     if (scaleFactor === NaN) {
-      $child.hide(0);
+      this.style.display = "none";
     }
     else {
       var newChildPos = {
         x: mousePos.x + (childPos.x - mousePos.x)*scaleFactor,
         y: mousePos.y + (childPos.y - mousePos.y)*scaleFactor,
       };
-      $child.show(0);
-      $child.css("left", newChildPos.x);
-      $child.css("top", newChildPos.y);
+      if (this.style.display === "none") {
+        this.style.display = "";
+      }
+      this.style.left = newChildPos.x;
+      this.style.top = newChildPos.y;
     }
   });
 }
