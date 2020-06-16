@@ -39,7 +39,7 @@ Use the following code in your HTML to import the script via CDN:
 
 - `avoidance.js`:
   - needs a major performance revamp (>50 particles)
-  - needs to support adding/removing tracked elements
+  - class-ification
   - support passing custom parameters to avoidance effect
   - support rotation animation
   - support element size / centre of gravity
