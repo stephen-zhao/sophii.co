@@ -17,8 +17,9 @@ class Avoidance {
   //                      of the containers are added initially as tracked
   //                      particles. Defaults to true.
   constructor(containerSelector, options, initWithChildren = true) {
-    // save the container selector for future use
-    this.containerSelector = containerSelector;
+    // save the containers
+    var containersCollection = document.querySelectorAll(containerSelector);
+    this.containers = Array.prototype.slice.call(containersCollection);
     // save options for future use
     this.options = options;
     // init tracked particles
@@ -29,7 +30,7 @@ class Avoidance {
     // Create particles from all of the container's children
     // and add them to the list of tracked particles, if specified to do so
     if (initWithChildren) {
-      document.querySelectorAll(this.containerSelector).forEach(function (container) {
+      this.containers.forEach(function (container) {
         for (var i = 0; i < container.children.length; ++i) {
           var particleElement = container.children[i];
           var particle = new Avoidance.Particle(particleElement);
@@ -59,7 +60,7 @@ class Avoidance {
 
   start() {
     // Add all event handlers to each container
-    document.querySelectorAll(this.containerSelector).forEach(function (container) {
+    this.containers.forEach(function (container) {
       container.addEventListener("mousemove", this.mouseMoveHandler);
       container.addEventListener("click", this.mouseClickTestHandler);
     }, this);
@@ -68,7 +69,7 @@ class Avoidance {
 
   stop() {
     // remove all event handlers, in reverse order, from each container
-    document.querySelectorAll(this.containerSelector).forEach(function (container) {
+    this.containers.forEach(function (container) {
       container.removeEventListener("click", this.mouseClickTestHandler);
       container.removeEventListener("mousemove", this.mouseMoveHandler);
     }, this);
@@ -119,13 +120,6 @@ class Avoidance {
     alert(datastring);
   }
 
-  static getCentre(element, relativeTo) {
-    return {
-      x: element.offsetLeft + element.offsetWidth / 2 - (relativeTo ? relativeTo.offsetLeft : 0),
-      y: element.offsetTop + element.offsetHeight / 2 - (relativeTo ? relativeTo.offsetTop : 0),
-    };
-  }
-
   static calculateAvoidanceFactor(originalDistance, elementSize, containerSize, method) {
     // TODO: take into account the element size (and therefore centre)
     if (typeof method === "function") {
@@ -164,7 +158,7 @@ Avoidance.geometry = {
 }
 
 Avoidance.calculateAvoidanceFactor.builtinMethods = {
-  "inverse": function(param_scale=0.1, param_offset=0.0) {
+  inverse: function(param_scale=0.1, param_offset=0.0) {
     return function(originalDistance, elementSize, containerSize) {
       if (originalDistance === 0) {
         return NaN;
@@ -174,12 +168,12 @@ Avoidance.calculateAvoidanceFactor.builtinMethods = {
       }
     }
   },
-  "exponential": function(param_scale=0.01, param_offset=0.25) {
+  exponential: function(param_scale=0.01, param_offset=0.25) {
     return function(originalDistance, elementSize, containerSize) {
       return Math.exp(param_scale-originalDistance*1.0/containerSize.width) + param_offset;
     }
   },
-  "power_inverse": function(param_scale=1.0, param_offset=0.0, param_power=1.6) {
+  power_inverse: function(param_scale=1.0, param_offset=0.0, param_power=1.6) {
     return function(originalDistance, elementSize, containerSize) {
       if (originalDistance === 0) {
         return NaN;
@@ -192,7 +186,7 @@ Avoidance.calculateAvoidanceFactor.builtinMethods = {
 }
 
 Avoidance.calculateAvoidanceDisplacement.builtinMethods = {
-  "threshold_absolute_radius": function(param_threshold_radius=100.0) {
+  threshold_absolute_radius: function(param_threshold_radius=100.0) {
     return function(particleOrigPosRelMouse, avoidanceFactor) {
       var offset = {
         x: particleOrigPosRelMouse.x*avoidanceFactor,
@@ -211,7 +205,7 @@ Avoidance.calculateAvoidanceDisplacement.builtinMethods = {
       }
     }
   },
-  "threshold_proportional_radius": function(param_threshold_radius=20.0) {
+  threshold_proportional_radius: function(param_threshold_radius=20.0) {
     return function(particleOrigPosRelMouse, avoidanceFactor) {
       var offset = {
         x: particleOrigPosRelMouse.x*avoidanceFactor,
@@ -228,13 +222,28 @@ Avoidance.calculateAvoidanceDisplacement.builtinMethods = {
       }
     }
   },
-  "standard": function() {
+  standard: function() {
     return function(particleOrigPosRelMouse, avoidanceFactor) {
       return {
         x: particleOrigPosRelMouse.x*avoidanceFactor,
         y: particleOrigPosRelMouse.y*avoidanceFactor,
       };
     }
+  }
+}
+
+Avoidance.dom = {
+  pageOffset: function(element) {
+    var rect = element.getBoundingClientRect();
+    var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+    var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+    return { x: rect.left + scrollLeft, y: rect.top + scrollTop }
+  },
+  getCentre: function(element, relativeTo) {
+    return {
+      x: element.offsetLeft + element.offsetWidth / 2 - (relativeTo ? relativeTo.offsetLeft : 0),
+      y: element.offsetTop + element.offsetHeight / 2 - (relativeTo ? relativeTo.offsetTop : 0),
+    };
   }
 }
 

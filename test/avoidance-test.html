@@ -2,16 +2,28 @@
   <head>
     <script src="../src/scripts/avoidance.js"></script>
     <style>
-      #my_container {
+      .my-container-class {
         position: absolute;
-        top: 100px;
-        left: 100px;
+      }
+
+      #my-container-0 {
+        top: 50px;
+        left: 50px;
         width: 1000px;
         height: 500px;
         border: 2px solid darkgreen;
       }
 
-      #my_container>div {
+      #my-container-1 {
+        position: absolute;
+        top: 50px;
+        left: 1150px;
+        width: 400px;
+        height: 700px;
+        border: 2px solid darkgreen;
+      }
+
+      .my-container-class>div {
         position: absolute;
         width: 10px;
         height: 10px;
@@ -20,19 +32,24 @@
     </style>
   </head>
   <body>
-    <div id="my_container">
+    <div id="my-container-0" class="my-container-class">
+    </div>
+    <div id="my-container-1" class="my-container-class">
     </div>
     <script>
-      var NUM_OF_PARTICLES = 50;
+      var NUM_OF_PARTICLES_EACH = 20;
+      var NUM_OF_CONTAINERS = 2;
       (function() {
-        var container = document.getElementById("my_container");
-        for (var i = 0; i < NUM_OF_PARTICLES; ++i) {
-          var particle = document.createElement("div");
-          particle.style.left = 100 + Math.random() * 800;
-          particle.style.top = 100 + Math.random() * 300;
-          container.appendChild(particle);
+        for (var containerIdx = 0; containerIdx < NUM_OF_CONTAINERS; ++containerIdx) {
+          var container = document.getElementById("my-container-"+containerIdx);
+          for (var i = 0; i < NUM_OF_PARTICLES_EACH; ++i) {
+            var particle = document.createElement("div");
+            particle.style.left = (container.offsetWidth * 0.1) + Math.random() * (container.offsetWidth * 0.8);
+            particle.style.top = (container.offsetHeight * 0.1) + Math.random() * (container.offsetHeight * 0.8);
+            container.appendChild(particle);
+          }
         }
-        new Avoidance("#my_container").start();
+        new Avoidance(".my-container-class").start();
       })();
     </script>
   </body>
