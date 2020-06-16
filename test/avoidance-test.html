@@ -1,20 +1,6 @@
 <html>
   <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="../src/scripts/avoidance.js"></script>
-    <script>
-      var NUM_OF_PARTICLES = 50;
-      $(function() {
-        var container = document.getElementById("my_container");
-        for (var i = 0; i < NUM_OF_PARTICLES; ++i) {
-          var particle = document.createElement("div");
-          particle.style.left = 100 + Math.random() * 800;
-          particle.style.top = 100 + Math.random() * 300;
-          container.appendChild(particle);
-        }
-        new Avoidance("#my_container").start();
-      })
-    </script>
     <style>
       #my_container {
         position: absolute;
@@ -36,5 +22,18 @@
   <body>
     <div id="my_container">
     </div>
+    <script>
+      var NUM_OF_PARTICLES = 50;
+      (function() {
+        var container = document.getElementById("my_container");
+        for (var i = 0; i < NUM_OF_PARTICLES; ++i) {
+          var particle = document.createElement("div");
+          particle.style.left = 100 + Math.random() * 800;
+          particle.style.top = 100 + Math.random() * 300;
+          container.appendChild(particle);
+        }
+        new Avoidance("#my_container").start();
+      })();
+    </script>
   </body>
 </html>

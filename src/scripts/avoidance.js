@@ -4,7 +4,6 @@
 
 // A standalone library for creating "avoidance cloud" effect.
 // All children of given containers will be animated to avoid the user's mouse.
-// Note: Assume jQuery is imported from browser
 
 class Avoidance {
   constructor(containerSelector, options) {
