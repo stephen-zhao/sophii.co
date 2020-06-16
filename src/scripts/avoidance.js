@@ -5,8 +5,18 @@
 // A standalone library for creating "avoidance cloud" effect.
 // All children of given containers will be animated to avoid the user's mouse.
 
+// The class which exposes the public API
 class Avoidance {
-  constructor(containerSelector, options) {
+  // input:
+  //   containerSelector - css-selector string which specifies the elements
+  //                       inside which the avoidance effect is triggered.
+  //   options - an settings object that takes the following optional 
+  //             key/values:
+  //             ...
+  //   initWithChildren - boolean which specifies whether or not the children
+  //                      of the containers are added initially as tracked
+  //                      particles. Defaults to true.
+  constructor(containerSelector, options, initWithChildren = true) {
     // save the container selector for future use
     this.containerSelector = containerSelector;
     // save options for future use
@@ -17,14 +27,18 @@ class Avoidance {
     this.mouseMoveHandler = this.mouseMoveHandler.bind(this);
     this.mouseClickTestHandler = this.mouseClickTestHandler.bind(this);
     // Create particles from all of the container's children
-    // and add them to the list of tracked particles
-    document.querySelectorAll(this.containerSelector).forEach(function (container) {
-      for (var i = 0; i < container.children.length; ++i) {
-        var particleElement = container.children[i];
-        var particle = new Avoidance.Particle(particleElement);
-        this.trackedParticles.push(particle);
-      }
-    }, this);
+    // and add them to the list of tracked particles, if specified to do so
+    if (initWithChildren) {
+      document.querySelectorAll(this.containerSelector).forEach(function (container) {
+        for (var i = 0; i < container.children.length; ++i) {
+          var particleElement = container.children[i];
+          var particle = new Avoidance.Particle(particleElement);
+          this.trackedParticles.push(particle);
+        }
+      }, this);
+      // set the initial status
+      this.status = "ready";
+    }
   }
 
   addTrackedParticles(particleSelector) {
@@ -49,6 +63,7 @@ class Avoidance {
       container.addEventListener("mousemove", this.mouseMoveHandler);
       container.addEventListener("click", this.mouseClickTestHandler);
     }, this);
+    this.status = "running";
   }
 
   stop() {
@@ -57,6 +72,7 @@ class Avoidance {
       container.removeEventListener("click", this.mouseClickTestHandler);
       container.removeEventListener("mousemove", this.mouseMoveHandler);
     }, this);
+    this.status = "stopped";
   }
 
   mouseMoveHandler(event) {
