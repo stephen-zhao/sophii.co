@@ -50,30 +50,67 @@ class Avoidance {
 
   removeTrackedParticles(particleSelector) {
     document.querySelectorAll(particleSelector).forEach(function (particleElement) {
-      if (!this.trackedParticles.includes(particle)) {
+      var idx = this.trackedParticles.indexOf(particle);
+      if (idx < 0) {
         return;
       }
       particle.dispose();
-      this.trackedParticles.splice(this.trackedParticles.indexOf(particle), 1);
+      this.trackedParticles.splice(idx, 1);
     }, this);
   }
 
   start() {
     // Add all event handlers to each container
-    this.containers.forEach(function (container) {
-      container.addEventListener("mousemove", this.mouseMoveHandler);
-      container.addEventListener("click", this.mouseClickTestHandler);
-    }, this);
+    this.containers.forEach(this.registerEventHandlers, this);
     this.status = "running";
   }
 
   stop() {
-    // remove all event handlers, in reverse order, from each container
-    this.containers.forEach(function (container) {
-      container.removeEventListener("click", this.mouseClickTestHandler);
-      container.removeEventListener("mousemove", this.mouseMoveHandler);
-    }, this);
+    // remove all event handlers from each container
+    this.containers.forEach(this.deregisterEventHandlers, this);
     this.status = "stopped";
+  }
+
+  addContainers(containerSelector) {
+    // add each selected container to the collection if not already there
+    // and register event handlers if we are already in running state
+    var containersCollection = document.querySelectorAll(containerSelector);
+    containersCollection.forEach(function(container) {
+      var idx = this.containers.indexOf(container);
+      if (idx >= 0) {
+        return;
+      }
+      this.containers.push(container);
+      if (this.status === "running") {
+        this.registerEventHandlers(container);
+      }
+    }, this);
+  }
+
+  removeContainers(containerSelector) {
+    // deregister event handlers if we are already in running state
+    // and remove each selected container from the collection if it exists
+    var containersCollection = document.querySelectorAll(containerSelector);
+    containersCollection.forEach(function(container) {
+      var idx = this.containers.indexOf(container);
+      if (idx < 0) {
+        return;
+      }
+      if (this.status === "running") {
+        this.deregisterEventHandlers(container);
+      }
+      this.containers.splice(idx, 1);
+    }, this);
+  }
+
+  registerEventHandlers(container) {
+    container.addEventListener("mousemove", this.mouseMoveHandler);
+    container.addEventListener("click", this.mouseClickTestHandler);
+  }
+
+  deregisterEventHandlers(container) {
+    container.removeEventListener("click", this.mouseClickTestHandler);
+    container.removeEventListener("mousemove", this.mouseMoveHandler);
   }
 
   mouseMoveHandler(event) {
