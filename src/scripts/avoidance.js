@@ -9,18 +9,39 @@
 var Avoidance = function(containerSelector, options) {
   this.containerSelector = containerSelector;
   this.options = options;
-  // Prep all children of container
-  // TODO: support children being added to/removed from the container
-  var $container = $(this.containerSelector);
-  $container.children().each(function() {
-    this.dataset.zhaostephenAvoidanceOrigx = this.offsetLeft;
-    this.dataset.zhaostephenAvoidanceOrigy = this.offsetTop;
-  });
+  this.trackedParticles = [];
+  // Create particles from all of the container's children
+  // and add them to the list of tracked particles
+  document.querySelectorAll(this.containerSelector).forEach(function(container) {
+    for (var i = 0; i < container.children.length; ++i) {
+      var particleElement = container.children[i];
+      var particle = new Avoidance.Particle(particleElement);
+      this.trackedParticles.push(particle);
+    }
+  }, this);
+}
+
+Avoidance.prototype.addTrackedParticles = function(particleSelector) {
+  document.querySelectorAll(particleSelector).forEach(function(particleElement) {
+    this.trackedParticles.push(new Avoidance.Particle(particleElement));
+  }, this);
+}
+
+Avoidance.prototype.removeTrackedParticles = function(particleSelector) {
+  document.querySelectorAll(particleSelector).forEach(function(particleElement) {
+    if (!this.trackedParticles.includes(particle)) {
+      return;
+    }
+    particle.dispose();
+    this.trackedParticles.splice(this.trackedParticles.indexOf(particle), 1);
+  }, this);
 }
 
 Avoidance.prototype.start = function() {
-  $(this.containerSelector).on("mousemove", { options: this.options }, Avoidance.mouseMoveHandler);
-  $(this.containerSelector).on("click", { options: this.options }, Avoidance.mouseClickTestHandler);
+  document.querySelectorAll(this.containerSelector).forEach(function(container) {
+    container.onmousemove = this.mouseMoveHandler.bind(this);
+    container.onclick = this.mouseClickTestHandler.bind(this);
+  }, this);
 }
 
 Avoidance.getCentre = function($element, $relativeTo) {
@@ -90,7 +111,7 @@ Avoidance.calculateAvoidanceDisplacement = function(particleOrigPosRelMouse, avo
     return Avoidance.calculateAvoidanceDisplacement.builtinMethods[method]()(particleOrigPosRelMouse, avoidanceFactor);
   }
   else {
-    return Avoidance.calculateAvoidanceDisplacement.builtinMethods.threshold_proportional_radius()(particleOrigPosRelMouse, avoidanceFactor);
+    return Avoidance.calculateAvoidanceDisplacement.builtinMethods.threshold_absolute_radius()(particleOrigPosRelMouse, avoidanceFactor);
   }
 }
 
@@ -141,51 +162,60 @@ Avoidance.calculateAvoidanceDisplacement.builtinMethods = {
   }
 }
 
-Avoidance.mouseMoveHandler = function(event) {
-  var $container = $(this);
-  var containerSize = { width: $container.width(), height: $container.height() };
-  var containerX = $container.offset().left;
-  var containerY = $container.offset().top;
+Avoidance.prototype.mouseMoveHandler = function(event) {
+  var container = event.currentTarget;
+  var containerSize = { width: container.offsetWidth, height: container.offsetHeight };
   // Determine the relative x and y of mouse position inside the container
-  var mousePos = { x: event.pageX - containerX, y: event.pageY - containerY };
-  $container.children().each(function() {
-    var particleOrigPos = {
-      x: parseInt(this.dataset.zhaostephenAvoidanceOrigx),
-      y: parseInt(this.dataset.zhaostephenAvoidanceOrigy),
-    };
-    var particleSize = { width: this.offsetWidth, height: this.offsetHeight };
+  var mousePos = { x: event.pageX - container.offsetLeft, y: event.pageY - container.offsetTop };
+  this.trackedParticles.forEach(function(particle) {
+    var particleSize = { width: particle.element.offsetWidth, height: particle.element.offsetHeight };
     var particleOrigPosRelMouse = {
-      x: particleOrigPos.x - mousePos.x,
-      y: particleOrigPos.y - mousePos.y,
+      x: particle.originalPos.x - mousePos.x,
+      y: particle.originalPos.y - mousePos.y,
     };
     var particleOrigDistance = Avoidance.geometry.getRadius(particleOrigPosRelMouse);
     var avoidanceFactor = Avoidance.calculateAvoidanceFactor(particleOrigDistance, particleSize, containerSize);
     if (avoidanceFactor === NaN) {
-      this.style.display = "none";
+      particle.element.style.display = "none";
     }
     else {
       var avoidanceDisplacement = Avoidance.calculateAvoidanceDisplacement(particleOrigPosRelMouse, avoidanceFactor);
       var newParticlePos = {
-        x: particleOrigPos.x + avoidanceDisplacement.x,
-        y: particleOrigPos.y + avoidanceDisplacement.y,
+        x: particle.originalPos.x + avoidanceDisplacement.x,
+        y: particle.originalPos.y + avoidanceDisplacement.y,
       };
-      if (this.style.display === "none") {
-        this.style.display = "";
+      if (particle.element.style.display === "none") {
+        particle.element.style.display = "";
       }
-      this.style.left = newParticlePos.x;
-      this.style.top = newParticlePos.y;
+      particle.element.style.left = newParticlePos.x;
+      particle.element.style.top = newParticlePos.y;
     }
-  });
+  }, this);
 }
 
-Avoidance.mouseClickTestHandler = function(event) {
-  var datastring = "";
-  $(this).children().each(function() {
-    var $child = $(this);
-    datastring += `child ${$child.attr("id")}\n`;
-    datastring += `original x = ${$child.data("zhaostephen.avoidance.origx")}\n`;
-    datastring += `original y = ${$child.data("zhaostephen.avoidance.origy")}\n`;
-    datastring += `-------------------\n`;
-  });
+Avoidance.prototype.mouseClickTestHandler = function(event) {
+  var datastring = this.trackedParticles.map(function(particle, idx) {
+    var particleString = "";
+    var id = particle.element.getAttribute("id");
+    particleString += `particle ${id !== null ? id : idx}\n`;
+    particleString += `original x = ${particle.originalPos.x}\n`;
+    particleString += `original y = ${particle.originalPos.y}\n`;
+    particleString += `-------------------\n`;
+    return particleString;
+  }).join("");
   alert(datastring);
+}
+
+// CLASS Particle
+
+Avoidance.Particle = function(element) {
+  this.element = element;
+  this.originalPos = {
+    x: element.offsetLeft,
+    y: element.offsetTop,
+  };
+}
+
+Avoidance.Particle.prototype.dispose = function() {
+  // TODO: return particle to original location, either by setting style or removing location style
 }
