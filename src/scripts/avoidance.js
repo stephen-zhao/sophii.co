@@ -7,9 +7,15 @@
 // Note: Assume jQuery is imported from browser
 
 var Avoidance = function(containerSelector, options) {
+  // save the container selector for future use
   this.containerSelector = containerSelector;
+  // save options for future use
   this.options = options;
+  // init tracked particles
   this.trackedParticles = [];
+  // "fix" event listeners
+  this.mouseMoveHandler = this.mouseMoveHandler.bind(this);
+  this.mouseClickTestHandler = this.mouseClickTestHandler.bind(this);
   // Create particles from all of the container's children
   // and add them to the list of tracked particles
   document.querySelectorAll(this.containerSelector).forEach(function(container) {
@@ -38,16 +44,25 @@ Avoidance.prototype.removeTrackedParticles = function(particleSelector) {
 }
 
 Avoidance.prototype.start = function() {
+  // Add all event handlers to each container
   document.querySelectorAll(this.containerSelector).forEach(function(container) {
-    container.onmousemove = this.mouseMoveHandler.bind(this);
-    container.onclick = this.mouseClickTestHandler.bind(this);
+    container.addEventListener("mousemove", this.mouseMoveHandler);
+    container.addEventListener("click", this.mouseClickTestHandler);
   }, this);
 }
 
-Avoidance.getCentre = function($element, $relativeTo) {
+Avoidance.prototype.stop = function() {
+  // remove all event handlers, in reverse order, from each container
+  document.querySelectorAll(this.containerSelector).forEach(function(container) {
+    container.removeEventListener("click", this.mouseClickTestHandler);
+    container.removeEventListener("mousemove", this.mouseMoveHandler);
+  }, this);
+}
+
+Avoidance.getCentre = function(element, relativeTo) {
   return {
-    x: $element.offset().left + $element.width() / 2 - ($relativeTo ? $relativeTo.offset().left : 0),
-    y: $element.offset().top + $element.height() / 2 - ($relativeTo ? $relativeTo.offset().top : 0)
+    x: element.offsetLeft + element.offsetWidth / 2 - (relativeTo ? relativeTo.offsetLeft : 0),
+    y: element.offsetTop + element.offsetHeight / 2 - (relativeTo ? relativeTo.offsetTop : 0),
   };
 }
 
