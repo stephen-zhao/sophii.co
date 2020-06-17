@@ -170,31 +170,31 @@ class Avoidance {
 
   mouseMoveHandler(event) {
     var container = event.currentTarget;
-    var containerSize = { width: container.offsetWidth, height: container.offsetHeight };
+    var containerSizeScalar = Avoidance.geometry.getRadius({ x: container.offsetWidth, y: container.offsetHeight });
     // Determine the relative x and y of mouse position inside the container
     var mousePos = { x: event.pageX - container.offsetLeft, y: event.pageY - container.offsetTop };
     this.trackedParticles.forEach(function (particle) {
       var particleSize = { width: particle.element.offsetWidth, height: particle.element.offsetHeight };
-      var particleOrigPosRelMouse = {
-        x: particle.originalPos.x - mousePos.x,
-        y: particle.originalPos.y - mousePos.y,
+      var particleOrigPosToCentreRelMouse = {
+        x: particle.originalPos.x + particleSize.width*1.0 / 2 - mousePos.x,
+        y: particle.originalPos.y + particleSize.height*1.0 / 2 - mousePos.y,
       };
-      var particleOrigDistance = Avoidance.geometry.getRadius(particleOrigPosRelMouse);
-      var avoidanceFactor = Avoidance.calculateAvoidanceFactor(particleOrigDistance, particleSize, containerSize);
+      var particleOrigDistToCentreRelMouse = Avoidance.geometry.getRadius(particleOrigPosToCentreRelMouse);
+      var avoidanceFactor = Avoidance.calculateAvoidanceFactor(particleOrigDistToCentreRelMouse, particleSize, containerSizeScalar);
       if (avoidanceFactor === NaN) {
         particle.element.style.display = "none";
       }
       else {
-        var avoidanceDisplacement = Avoidance.calculateAvoidanceDisplacement(particleOrigPosRelMouse, avoidanceFactor);
-        var newParticlePos = {
+        var avoidanceDisplacement = Avoidance.calculateAvoidanceDisplacement(particleOrigPosToCentreRelMouse, avoidanceFactor);
+        var particleNewPos = {
           x: particle.originalPos.x + avoidanceDisplacement.x,
           y: particle.originalPos.y + avoidanceDisplacement.y,
         };
         if (particle.element.style.display === "none") {
           particle.element.style.display = "";
         }
-        particle.element.style.left = newParticlePos.x;
-        particle.element.style.top = newParticlePos.y;
+        particle.element.style.left = particleNewPos.x;
+        particle.element.style.top = particleNewPos.y;
       }
     }, this);
   }
@@ -212,17 +212,16 @@ class Avoidance {
     alert(datastring);
   }
 
-  static calculateAvoidanceFactor(originalDistance, elementSize, containerSize, method) {
+  static calculateAvoidanceFactor(originalDistance, elementSize, containerSizeScalar, method) {
     // TODO: take into account the element size (and therefore centre)
     if (typeof method === "function") {
-      return method(originalDistance, elementSize, containerSize);
+      return method(originalDistance, elementSize, containerSizeScalar);
     }
     else if (typeof method === "string" && method in Avoidance.calculateAvoidanceFactor.builtinMethods) {
-
-      return Avoidance.calculateAvoidanceFactor.builtinMethods[method]()(originalDistance, elementSize, containerSize);
+      return Avoidance.calculateAvoidanceFactor.builtinMethods[method]()(originalDistance, elementSize, containerSizeScalar);
     }
     else {
-      return Avoidance.calculateAvoidanceFactor.builtinMethods.power_inverse()(originalDistance, elementSize, containerSize);
+      return Avoidance.calculateAvoidanceFactor.builtinMethods.power_inverse()(originalDistance, elementSize, containerSizeScalar);
     }
   }
   
@@ -231,7 +230,6 @@ class Avoidance {
       return method(particleOrigPosRelMouse, avoidanceFactor);
     }
     else if (typeof method === "string" && method in Avoidance.calculateAvoidanceDisplacement.builtinMethods) {
-
       return Avoidance.calculateAvoidanceDisplacement.builtinMethods[method]()(particleOrigPosRelMouse, avoidanceFactor);
     }
     else {
@@ -251,27 +249,27 @@ Avoidance.geometry = {
 
 Avoidance.calculateAvoidanceFactor.builtinMethods = {
   inverse: function(param_scale=0.1, param_offset=0.0) {
-    return function(originalDistance, elementSize, containerSize) {
+    return function(originalDistance, elementSize, containerSizeScalar) {
       if (originalDistance === 0) {
         return NaN;
       }
       else {
-        return (containerSize.width*param_scale*1.0)/originalDistance + param_offset;
+        return (containerSizeScalar*param_scale*1.0)/originalDistance + param_offset;
       }
     }
   },
   exponential: function(param_scale=0.01, param_offset=0.25) {
-    return function(originalDistance, elementSize, containerSize) {
-      return Math.exp(param_scale-originalDistance*1.0/containerSize.width) + param_offset;
+    return function(originalDistance, elementSize, containerSizeScalar) {
+      return Math.exp(param_scale-originalDistance*1.0/containerSizeScalar) + param_offset;
     }
   },
   power_inverse: function(param_scale=1.0, param_offset=0.0, param_power=1.6) {
-    return function(originalDistance, elementSize, containerSize) {
+    return function(originalDistance, elementSize, containerSizeScalar) {
       if (originalDistance === 0) {
         return NaN;
       }
       else {
-        return ((containerSize.width*param_scale*1.0)/Math.pow(originalDistance*1.0, param_power) + param_offset);
+        return ((containerSizeScalar*param_scale*1.0)/Math.pow(originalDistance*1.0, param_power) + param_offset);
       }
     }
   }
