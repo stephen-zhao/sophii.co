@@ -36,20 +36,57 @@
     </div>
     <div id="my-container-1" class="my-container-class">
     </div>
+    <div class="test-input-form">
+      <input type="button" value="Add particle" id="add-particle-btn">
+      <input type="button" value="Remove particle" id="remove-particle-btn">
+    </div>
     <script>
-      var NUM_OF_PARTICLES_EACH = 20;
-      var NUM_OF_CONTAINERS = 2;
+      var NUM_OF_PARTICLES_EACH = 50;
+      var NUM_OF_CONTAINERS = 1;
       (function() {
-        for (var containerIdx = 0; containerIdx < NUM_OF_CONTAINERS; ++containerIdx) {
-          var container = document.getElementById("my-container-"+containerIdx);
-          for (var i = 0; i < NUM_OF_PARTICLES_EACH; ++i) {
+
+        var addParticles = function(containerSelector, n) {
+          var particles = [];
+          var container = document.querySelector(containerSelector);
+          for (var i = 0; i < n; ++i) {
             var particle = document.createElement("div");
             particle.style.left = (container.offsetWidth * 0.1) + Math.random() * (container.offsetWidth * 0.8);
             particle.style.top = (container.offsetHeight * 0.1) + Math.random() * (container.offsetHeight * 0.8);
             container.appendChild(particle);
+            particles.push(particle);
           }
+          return particles;
         }
-        new Avoidance(".my-container-class").start();
+
+        var removeParticle = function(containerSelector) {
+          var container = document.querySelector(containerSelector);
+          if (container.children.length === 0) {
+            return null;
+          }
+          var particle = container.children[0];
+          container.removeChild(particle);
+          return particle;
+        }
+
+        for (var containerIdx = 0; containerIdx < NUM_OF_CONTAINERS; ++containerIdx) {
+          addParticles("#my-container-"+containerIdx, NUM_OF_PARTICLES_EACH);
+        }
+
+        document.getElementById("add-particle-btn").addEventListener("click", function() {
+          var particles = addParticles("#my-container-0", 1);
+          avoidance.addParticleElement(particles[0]);
+        });
+
+        document.getElementById("remove-particle-btn").addEventListener("click", function() {
+          var particle = removeParticle("#my-container-0");
+          if (particle) {
+            avoidance.removeParticleElement(particle);
+          }
+        });
+
+        var avoidance = new Avoidance(".my-container-class");
+        avoidance.start();
+        
       })();
     </script>
   </body>

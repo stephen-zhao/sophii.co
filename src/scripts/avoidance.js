@@ -8,15 +8,17 @@
 // The class which exposes the public API
 class Avoidance {
   // input:
-  //   containerSelector - css-selector string which specifies the elements
-  //                       inside which the avoidance effect is triggered.
-  //   options - an settings object that takes the following optional 
-  //             key/values:
-  //             ...
-  //   initWithChildren - boolean which specifies whether or not the children
-  //                      of the containers are added initially as tracked
-  //                      particles. Defaults to true.
-  constructor(containerSelector, options, initWithChildren = true) {
+  //   containerSelector
+  //    - css-selector string which specifies the elements
+  //      inside which the avoidance effect is triggered.
+  //   options
+  //    - an settings object that takes the following optional key/values:
+  //      ...
+  //   addChildrenAsParticles
+  //    - boolean which specifies whether or not the children
+  //      of the containers are added initially as tracked
+  //      particles. Defaults to true.
+  constructor(containerSelector, options, addChildrenAsParticles = true) {
     // save the containers
     var containersCollection = document.querySelectorAll(containerSelector);
     this.containers = Array.prototype.slice.call(containersCollection);
@@ -24,39 +26,79 @@ class Avoidance {
     this.options = options;
     // init tracked particles
     this.trackedParticles = [];
+    this.trackedParticleElementsSet = new Set();
     // "fix" event listeners
     this.mouseMoveHandler = this.mouseMoveHandler.bind(this);
     this.mouseClickTestHandler = this.mouseClickTestHandler.bind(this);
     // Create particles from all of the container's children
     // and add them to the list of tracked particles, if specified to do so
-    if (initWithChildren) {
+    if (addChildrenAsParticles) {
       this.containers.forEach(function (container) {
         for (var i = 0; i < container.children.length; ++i) {
-          var particleElement = container.children[i];
-          var particle = new Avoidance.Particle(particleElement);
-          this.trackedParticles.push(particle);
+          this.startTrackingParticleElement(container.children[i]);
         }
       }, this);
-      // set the initial status
-      this.status = "ready";
+    }
+    // set the initial status
+    this.status = "ready";
+  }
+
+  addParticles(particleSelector) {
+    document.querySelectorAll(particleSelector).forEach(this.startTrackingParticleElement, this);
+  }
+
+  addParticleElement(particleElement) {
+    this.startTrackingParticleElement(particleElement);
+  }
+
+  removeParticles(particleSelector) {
+    this.stopTrackingParticleElements(document.querySelectorAll(particleSelector));
+  }
+
+  removeParticleElement(particleElement) {
+    this.stopTrackingParticleElement(particleElement);
+  }
+
+  startTrackingParticleElement(particleElement) {
+    if (!this.trackedParticleElementsSet.has(particleElement)) {
+      var particle = new Avoidance.Particle(particleElement);
+      this.trackedParticles.push(particle);
+      this.trackedParticleElementsSet.add(particleElement);
     }
   }
 
-  addTrackedParticles(particleSelector) {
-    document.querySelectorAll(particleSelector).forEach(function (particleElement) {
-      this.trackedParticles.push(new Avoidance.Particle(particleElement));
-    }, this);
+  stopTrackingParticleElement(particleElement) {
+    if (this.trackedParticleElementsSet.has(particleElement)) {
+      // First remove from lookup set
+      this.trackedParticleElementsSet.delete(particleElement);
+      var foundIdx = this.trackedParticles.findIndex(function(particle) {
+        return particle.element === particleElement;
+      });
+      if (foundIdx !== -1) {
+        // Then dispose
+        this.trackedParticles[foundIdx].dispose();
+        // Then remove from tracked particles
+        this.trackedParticles.splice(foundIdx, 1);
+      }
+    }
   }
 
-  removeTrackedParticles(particleSelector) {
-    document.querySelectorAll(particleSelector).forEach(function (particleElement) {
-      var idx = this.trackedParticles.indexOf(particle);
-      if (idx < 0) {
-        return;
+  stopTrackingParticleElements(particleElements) {
+    var particleElementSet = new Set(particleElements);
+    for (var i = 0; i < this.trackedParticles.length; ++i) {
+      if (particleElementSet.has(this.trackedParticles[i].element)) {
+        // First remove from lookup set
+        this.trackedParticleElementsSet.delete(this.trackedParticles[i].element);
+        // Then dispose
+        this.trackedParticles[i].dispose();
+        // Then remove from tracked particles
+        this.trackedParticles[i] = "removed";
       }
-      particle.dispose();
-      this.trackedParticles.splice(idx, 1);
-    }, this);
+    }
+    // Realize the removal
+    this.trackedParticles = this.trackedParticles.filter(function(particle) {
+      return particle !== "removed";
+    });
   }
 
   start() {
@@ -71,34 +113,47 @@ class Avoidance {
     this.status = "stopped";
   }
 
-  addContainers(containerSelector) {
-    // add each selected container to the collection if not already there
-    // and register event handlers if we are already in running state
+  addContainers(containerSelector, addChildrenAsParticles = true) {
+    // Split work by processing each selected container iteratively
     var containersCollection = document.querySelectorAll(containerSelector);
     containersCollection.forEach(function(container) {
+      // Only add if not already added
       var idx = this.containers.indexOf(container);
       if (idx >= 0) {
         return;
       }
       this.containers.push(container);
+      // Add children as particles if specified to do so
+      if (addChildrenAsParticles) {
+        for (var i = 0; i < container.children.length; ++i) {
+          this.startTrackingParticleElement(container.children[i]);
+        }
+      }
+      // Register handlers if we are already running
       if (this.status === "running") {
         this.registerEventHandlers(container);
       }
     }, this);
   }
 
-  removeContainers(containerSelector) {
-    // deregister event handlers if we are already in running state
-    // and remove each selected container from the collection if it exists
+  removeContainers(containerSelector, removeChildrenAsParticles = true) {
+    // Process each selected container iteratively
     var containersCollection = document.querySelectorAll(containerSelector);
     containersCollection.forEach(function(container) {
+      // Process only if the container is tracked
       var idx = this.containers.indexOf(container);
       if (idx < 0) {
         return;
       }
+      // Remove children as particles if specified to do so
+      if (removeChildrenAsParticles) {
+        this.stopTrackingParticleElements(container.children);
+      }
+      // Deregister events if we are running
       if (this.status === "running") {
         this.deregisterEventHandlers(container);
       }
+      // Remove from tracked containers
       this.containers.splice(idx, 1);
     }, this);
   }
@@ -223,7 +278,7 @@ Avoidance.calculateAvoidanceFactor.builtinMethods = {
 }
 
 Avoidance.calculateAvoidanceDisplacement.builtinMethods = {
-  threshold_absolute_radius: function(param_threshold_radius=100.0) {
+  threshold_absolute_radius: function(param_threshold_radius=80.0) {
     return function(particleOrigPosRelMouse, avoidanceFactor) {
       var offset = {
         x: particleOrigPosRelMouse.x*avoidanceFactor,
