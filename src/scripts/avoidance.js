@@ -13,12 +13,14 @@ class Avoidance {
   //      inside which the avoidance effect is triggered.
   //   options
   //    - an settings object that takes the following optional key/values:
+  //      factorMethod: "inverse", "power_inverse", "exponential"
+  //      displacementMethod: "standard", "proportional_threshold", "absolute_threshold"
   //      ...
   //   addChildrenAsParticles
   //    - boolean which specifies whether or not the children
   //      of the containers are added initially as tracked
   //      particles. Defaults to true.
-  constructor(containerSelector, options, addChildrenAsParticles = true) {
+  constructor(containerSelector, options = {}, addChildrenAsParticles = true) {
     // save the containers
     var containersCollection = document.querySelectorAll(containerSelector);
     this.containers = Array.prototype.slice.call(containersCollection);
@@ -180,12 +182,12 @@ class Avoidance {
         y: particle.originalPos.y + particleSize.height*1.0 / 2 - mousePos.y,
       };
       var particleOrigDistToCentreRelMouse = Avoidance.geometry.getRadius(particleOrigPosToCentreRelMouse);
-      var avoidanceFactor = Avoidance.calculateAvoidanceFactor(particleOrigDistToCentreRelMouse, particleSize, containerSizeScalar);
+      var avoidanceFactor = this.calculateAvoidanceFactor(particleOrigDistToCentreRelMouse, particleSize, containerSizeScalar);
       if (avoidanceFactor === NaN) {
         particle.element.style.display = "none";
       }
       else {
-        var avoidanceDisplacement = Avoidance.calculateAvoidanceDisplacement(particleOrigPosToCentreRelMouse, avoidanceFactor);
+        var avoidanceDisplacement = this.calculateAvoidanceDisplacement(particleOrigPosToCentreRelMouse, avoidanceFactor);
         var particleNewPos = {
           x: particle.originalPos.x + avoidanceDisplacement.x,
           y: particle.originalPos.y + avoidanceDisplacement.y,
@@ -212,8 +214,10 @@ class Avoidance {
     alert(datastring);
   }
 
-  static calculateAvoidanceFactor(originalDistance, elementSize, containerSizeScalar, method) {
-    // TODO: take into account the element size (and therefore centre)
+  calculateAvoidanceFactor(originalDistance, elementSize, containerSizeScalar, method) {
+    if (method === undefined) {
+      method = this.options.factorMethod;
+    }
     if (typeof method === "function") {
       return method(originalDistance, elementSize, containerSizeScalar);
     }
@@ -225,7 +229,10 @@ class Avoidance {
     }
   }
   
-  static calculateAvoidanceDisplacement(particleOrigPosRelMouse, avoidanceFactor, method) {
+  calculateAvoidanceDisplacement(particleOrigPosRelMouse, avoidanceFactor, method) {
+    if (method === undefined) {
+      method = this.options.displacementMethod;
+    }
     if (typeof method === "function") {
       return method(particleOrigPosRelMouse, avoidanceFactor);
     }
@@ -233,7 +240,7 @@ class Avoidance {
       return Avoidance.calculateAvoidanceDisplacement.builtinMethods[method]()(particleOrigPosRelMouse, avoidanceFactor);
     }
     else {
-      return Avoidance.calculateAvoidanceDisplacement.builtinMethods.threshold_absolute_radius()(particleOrigPosRelMouse, avoidanceFactor);
+      return Avoidance.calculateAvoidanceDisplacement.builtinMethods.absolute_threshold()(particleOrigPosRelMouse, avoidanceFactor);
     }
   }
 }
@@ -247,77 +254,81 @@ Avoidance.geometry = {
   },
 }
 
-Avoidance.calculateAvoidanceFactor.builtinMethods = {
-  inverse: function(param_scale=0.1, param_offset=0.0) {
-    return function(originalDistance, elementSize, containerSizeScalar) {
-      if (originalDistance === 0) {
-        return NaN;
+Avoidance.calculateAvoidanceFactor = {
+  builtinMethods: {
+    inverse: function(param_scale=0.1, param_offset=0.0) {
+      return function(originalDistance, elementSize, containerSizeScalar) {
+        if (originalDistance === 0) {
+          return NaN;
+        }
+        else {
+          return (containerSizeScalar*param_scale*1.0)/originalDistance + param_offset;
+        }
       }
-      else {
-        return (containerSizeScalar*param_scale*1.0)/originalDistance + param_offset;
+    },
+    exponential: function(param_scale=0.01, param_offset=0.25) {
+      return function(originalDistance, elementSize, containerSizeScalar) {
+        return Math.exp(param_scale-originalDistance*1.0/containerSizeScalar) + param_offset;
       }
-    }
-  },
-  exponential: function(param_scale=0.01, param_offset=0.25) {
-    return function(originalDistance, elementSize, containerSizeScalar) {
-      return Math.exp(param_scale-originalDistance*1.0/containerSizeScalar) + param_offset;
-    }
-  },
-  power_inverse: function(param_scale=1.0, param_offset=0.0, param_power=1.6) {
-    return function(originalDistance, elementSize, containerSizeScalar) {
-      if (originalDistance === 0) {
-        return NaN;
-      }
-      else {
-        return ((containerSizeScalar*param_scale*1.0)/Math.pow(originalDistance*1.0, param_power) + param_offset);
+    },
+    power_inverse: function(param_scale=1.0, param_offset=0.0, param_power=1.6) {
+      return function(originalDistance, elementSize, containerSizeScalar) {
+        if (originalDistance === 0) {
+          return NaN;
+        }
+        else {
+          return ((containerSizeScalar*param_scale*1.0)/Math.pow(originalDistance*1.0, param_power) + param_offset);
+        }
       }
     }
   }
 }
 
-Avoidance.calculateAvoidanceDisplacement.builtinMethods = {
-  threshold_absolute_radius: function(param_threshold_radius=80.0) {
-    return function(particleOrigPosRelMouse, avoidanceFactor) {
-      var offset = {
-        x: particleOrigPosRelMouse.x*avoidanceFactor,
-        y: particleOrigPosRelMouse.y*avoidanceFactor,
-      };
-      if (Avoidance.geometry.getRadius(offset) > param_threshold_radius) {
-        var origRadius = Avoidance.geometry.getRadius(particleOrigPosRelMouse);
-        var scaleFactor = (param_threshold_radius / origRadius);
+Avoidance.calculateAvoidanceDisplacement = {
+  builtinMethods: {
+    absolute_threshold: function(param_threshold_radius=80.0) {
+      return function(particleOrigPosRelMouse, avoidanceFactor) {
+        var offset = {
+          x: particleOrigPosRelMouse.x*avoidanceFactor,
+          y: particleOrigPosRelMouse.y*avoidanceFactor,
+        };
+        if (Avoidance.geometry.getRadius(offset) > param_threshold_radius) {
+          var origRadius = Avoidance.geometry.getRadius(particleOrigPosRelMouse);
+          var scaleFactor = (param_threshold_radius / origRadius);
+          return {
+            x: particleOrigPosRelMouse.x*scaleFactor,
+            y: particleOrigPosRelMouse.y*scaleFactor,
+          };
+        }
+        else {
+          return offset;
+        }
+      }
+    },
+    proportional_threshold: function(param_threshold_radius=20.0) {
+      return function(particleOrigPosRelMouse, avoidanceFactor) {
+        var offset = {
+          x: particleOrigPosRelMouse.x*avoidanceFactor,
+          y: particleOrigPosRelMouse.y*avoidanceFactor,
+        };
+        if (avoidanceFactor > param_threshold_radius) {
+          return {
+            x: particleOrigPosRelMouse.x*param_threshold_radius,
+            y: particleOrigPosRelMouse.y*param_threshold_radius,
+          };
+        }
+        else {
+          return offset;
+        }
+      }
+    },
+    standard: function() {
+      return function(particleOrigPosRelMouse, avoidanceFactor) {
         return {
-          x: particleOrigPosRelMouse.x*scaleFactor,
-          y: particleOrigPosRelMouse.y*scaleFactor,
+          x: particleOrigPosRelMouse.x*avoidanceFactor,
+          y: particleOrigPosRelMouse.y*avoidanceFactor,
         };
       }
-      else {
-        return offset;
-      }
-    }
-  },
-  threshold_proportional_radius: function(param_threshold_radius=20.0) {
-    return function(particleOrigPosRelMouse, avoidanceFactor) {
-      var offset = {
-        x: particleOrigPosRelMouse.x*avoidanceFactor,
-        y: particleOrigPosRelMouse.y*avoidanceFactor,
-      };
-      if (avoidanceFactor > param_threshold_radius) {
-        return {
-          x: particleOrigPosRelMouse.x*param_threshold_radius,
-          y: particleOrigPosRelMouse.y*param_threshold_radius,
-        };
-      }
-      else {
-        return offset;
-      }
-    }
-  },
-  standard: function() {
-    return function(particleOrigPosRelMouse, avoidanceFactor) {
-      return {
-        x: particleOrigPosRelMouse.x*avoidanceFactor,
-        y: particleOrigPosRelMouse.y*avoidanceFactor,
-      };
     }
   }
 }
