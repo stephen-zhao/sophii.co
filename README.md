@@ -40,9 +40,7 @@ Use the following code in your HTML to import the script via CDN, after jQuery i
 
 - `avoidance.js`:
   - needs a major performance revamp (>50 particles)
-  - support passing custom parameters to avoidance effect
   - support rotation animation
-  - support element size / centre of gravity
   - add typedefs in typescript (especially for the API)
 - `gallery-case-scroll.js`:
   - needs library-ification

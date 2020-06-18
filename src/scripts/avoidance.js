@@ -12,10 +12,17 @@ class Avoidance {
   //    - css-selector string which specifies the elements
   //      inside which the avoidance effect is triggered.
   //   options
-  //    - an settings object that takes the following optional key/values:
-  //      factorMethod: "inverse", "power_inverse", "exponential"
-  //      displacementMethod: "standard", "proportional_threshold", "absolute_threshold"
-  //      ...
+  //    - an settings object that takes the following *optional* key/values:
+  //      factorMethod: {
+  //        name: one of "inverse", "power_inverse", or "exponential"
+  //        scale: a number
+  //        offset: a number
+  //        power: a number
+  //      }
+  //      displacementMethod: {
+  //        name: one of "standard", "proportional_threshold", or "absolute_threshold"
+  //        thresholdRadius: a number
+  //      }
   //   addChildrenAsParticles
   //    - boolean which specifies whether or not the children
   //      of the containers are added initially as tracked
@@ -25,7 +32,7 @@ class Avoidance {
     var containersCollection = document.querySelectorAll(containerSelector);
     this.containers = Array.prototype.slice.call(containersCollection);
     // save options for future use
-    this.options = options;
+    this.options = this.initOptions(options);
     // init tracked particles
     this.trackedParticles = [];
     this.trackedParticleElementsSet = new Set();
@@ -43,6 +50,92 @@ class Avoidance {
     }
     // set the initial status
     this.status = "ready";
+  }
+
+  initOptions(userOptions) {
+    var options = {};
+
+    // Process factorMethod option
+    options.factorMethod = {};
+    if ("factorMethod" in userOptions) {
+      if (typeof userOptions.factorMethod === "string"
+          && (userOptions.factorMethod in Avoidance.calculateAvoidanceFactor.builtinMethods)) {
+        options.factorMethod.name = userOptions.factorMethod;
+        options.factorMethod.scale = undefined;
+        options.factorMethod.offset = undefined;
+        options.factorMethod.power = undefined;
+      }
+      else if (typeof userOptions.factorMethod === "object") {
+        if (("name" in userOptions.factorMethod)
+            && (typeof userOptions.factorMethod.name === "string")
+            && (userOptions.factorMethod.name in Avoidance.calculateAvoidanceFactor.builtinMethods)) {
+          options.factorMethod.name = userOptions.factorMethod.name;
+        }
+        else {
+          options.factorMethod.name = undefined;
+        }
+        if (("scale" in userOptions.factorMethod)
+            && (typeof userOptions.factorMethod.scale === "number")) {
+          options.factorMethod.scale = userOptions.factorMethod.scale;
+        }
+        else {
+          options.factorMethod.scale = undefined;
+        }
+        if (("offset" in userOptions.factorMethod)
+            && (typeof userOptions.factorMethod.offset === "number")) {
+          options.factorMethod.offset = userOptions.factorMethod.offset;
+        }
+        else {
+          options.factorMethod.offset = undefined;
+        }
+        if (("power" in userOptions.factorMethod)
+            && (typeof userOptions.factorMethod.power === "number")) {
+          options.factorMethod.power = userOptions.factorMethod.power;
+        }
+        else {
+          options.factorMethod.power = undefined;
+        }
+      }
+      else {
+        options.factorMethod.name = undefined;
+        options.factorMethod.scale = undefined;
+        options.factorMethod.offset = undefined;
+        options.factorMethod.power = undefined;
+      }
+    }
+
+    // Process displacementMethod
+    options.displacementMethod = {};
+    if ("displacementMethod" in userOptions) {
+      if (typeof userOptions.displacementMethod === "string"
+          && (userOptions.displacementMethod in Avoidance.calculateAvoidanceDisplacement.builtinMethods)) {
+        options.displacementMethod.name = userOptions.displacementMethod;
+        options.displacementMethod.thresholdRadius = undefined;
+      }
+      else if (typeof userOptions.displacementMethod === "object") {
+        if (("name" in userOptions.displacementMethod)
+            && (typeof userOptions.displacementMethod.name === "string")
+            && (userOptions.displacementMethod.name in Avoidance.calculateAvoidanceDisplacement.builtinMethods)) {
+          options.displacementMethod.name = userOptions.displacementMethod.name;
+        }
+        else {
+          options.displacementMethod.name = undefined;
+        }
+        if (("thresholdRadius" in userOptions.displacementMethod)
+            && (typeof userOptions.displacementMethod.thresholdRadius === "number")) {
+          options.displacementMethod.thresholdRadius = userOptions.displacementMethod.thresholdRadius;
+        }
+        else {
+          options.displacementMethod.thresholdRadius = undefined;
+        }
+      }
+      else {
+        options.displacementMethod.name = undefined;
+        options.displacementMethod.thresholdRadius = undefined;
+      }
+    }
+
+    return options;
   }
 
   addParticles(particleSelector) {
@@ -216,32 +309,36 @@ class Avoidance {
 
   calculateAvoidanceFactor(originalDistance, elementSize, containerSizeScalar, method) {
     if (method === undefined) {
-      method = this.options.factorMethod;
+      method = this.options.factorMethod.name;
     }
-    if (typeof method === "function") {
-      return method(originalDistance, elementSize, containerSizeScalar);
-    }
-    else if (typeof method === "string" && method in Avoidance.calculateAvoidanceFactor.builtinMethods) {
-      return Avoidance.calculateAvoidanceFactor.builtinMethods[method]()(originalDistance, elementSize, containerSizeScalar);
+    var methodFn = null;
+    if (method !== undefined) {
+      methodFn = Avoidance.calculateAvoidanceFactor.builtinMethods[method];
     }
     else {
-      return Avoidance.calculateAvoidanceFactor.builtinMethods.power_inverse()(originalDistance, elementSize, containerSizeScalar);
+      methodFn = Avoidance.calculateAvoidanceFactor.builtinMethods.power_inverse;
     }
+    return methodFn(
+      this.options.factorMethod.scale,
+      this.options.factorMethod.offset,
+      this.options.factorMethod.power
+    )(originalDistance, elementSize, containerSizeScalar);
   }
   
   calculateAvoidanceDisplacement(particleOrigPosRelMouse, avoidanceFactor, method) {
     if (method === undefined) {
-      method = this.options.displacementMethod;
+      method = this.options.displacementMethod.name;
     }
-    if (typeof method === "function") {
-      return method(particleOrigPosRelMouse, avoidanceFactor);
-    }
-    else if (typeof method === "string" && method in Avoidance.calculateAvoidanceDisplacement.builtinMethods) {
-      return Avoidance.calculateAvoidanceDisplacement.builtinMethods[method]()(particleOrigPosRelMouse, avoidanceFactor);
+    var methodFn = null;
+    if (method !== undefined) {
+      methodFn = Avoidance.calculateAvoidanceDisplacement.builtinMethods[method];
     }
     else {
-      return Avoidance.calculateAvoidanceDisplacement.builtinMethods.absolute_threshold()(particleOrigPosRelMouse, avoidanceFactor);
+      methodFn = Avoidance.calculateAvoidanceDisplacement.builtinMethods.absolute_threshold;
     }
+    return methodFn(
+      this.options.displacementMethod.thresholdRadius
+    )(particleOrigPosRelMouse, avoidanceFactor);
   }
 }
 
@@ -256,7 +353,7 @@ Avoidance.geometry = {
 
 Avoidance.calculateAvoidanceFactor = {
   builtinMethods: {
-    inverse: function(param_scale=0.1, param_offset=0.0) {
+    inverse: function(param_scale=0.1, param_offset=0.0, param_power=undefined) {
       return function(originalDistance, elementSize, containerSizeScalar) {
         if (originalDistance === 0) {
           return NaN;
@@ -266,7 +363,7 @@ Avoidance.calculateAvoidanceFactor = {
         }
       }
     },
-    exponential: function(param_scale=0.01, param_offset=0.25) {
+    exponential: function(param_scale=0.01, param_offset=0.25, param_power=undefined) {
       return function(originalDistance, elementSize, containerSizeScalar) {
         return Math.exp(param_scale-originalDistance*1.0/containerSizeScalar) + param_offset;
       }
@@ -322,7 +419,7 @@ Avoidance.calculateAvoidanceDisplacement = {
         }
       }
     },
-    standard: function() {
+    standard: function(param_threshold_radius=undefined) {
       return function(particleOrigPosRelMouse, avoidanceFactor) {
         return {
           x: particleOrigPosRelMouse.x*avoidanceFactor,
