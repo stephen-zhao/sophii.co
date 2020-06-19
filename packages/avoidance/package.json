@@ -1,0 +1,9 @@
+{
+  "name": "@zhaostephen/avoidance",
+  "version": "0.1.0",
+  "description": "A standalone library for creating avoidance-cloud particle effects.",
+  "main": "avoidance.js",
+  "repository": "https://github.com/stephen-zhao/sophii.co",
+  "author": "Stephen Zhao",
+  "license": "GNU GPLv3"
+}

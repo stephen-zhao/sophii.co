@@ -1,0 +1,15 @@
+{
+  "name": "sophii.co",
+  "version": "0.1.0",
+  "description": "A group of packages, scripts, and working files originally developed for the sophii.co website.",
+  "repository": "https://github.com/stephen-zhao/sophii.co",
+  "author": "Stephen Zhao",
+  "license": "GNU GPLv3",
+  "devDependencies": {
+    "lerna": "^3.22.1"
+  },
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ]
+}
