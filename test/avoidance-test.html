@@ -2,29 +2,31 @@
   <head>
     <script src="../src/scripts/avoidance.js"></script>
     <style>
-      .my-container-class {
-        position: absolute;
+      .containers-grid-shell {
+        padding: 10px;
+      }
+
+      .containers-grid {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin: -10px;
+      }
+
+      .container-panel {
+        margin: 10px;
+      }
+
+      .particle-container {
+        position: relative;
+        width: 500px;
+        height: 500px;
         border: 2px solid goldenrod;
         background-color: black;
         overflow: hidden;
       }
 
-      #my-container-0 {
-        top: 50px;
-        left: 50px;
-        width: 1000px;
-        height: 500px;
-      }
-
-      #my-container-1 {
-        position: absolute;
-        top: 50px;
-        left: 1150px;
-        width: 400px;
-        height: 700px;
-      }
-
-      .my-container-class>div {
+      .particle-container>div {
         position: absolute;
         width: 20px;
         height: 20px;
@@ -35,18 +37,40 @@
     </style>
   </head>
   <body>
-    <div id="my-container-0" class="my-container-class">
-    </div>
-    <div id="my-container-1" class="my-container-class">
-    </div>
-    <div class="test-input-form">
-      <input type="button" value="Add particle" id="add-particle-btn">
-      <input type="button" value="Remove particle" id="remove-particle-btn">
+    <div class="containers-grid-shell">
+      <div class="containers-grid">
+        <div class="container-panel" data-key="0">
+          <input type="button" value="Add particle" class="add-particle-btn">
+          <input type="button" value="Remove particle" class="remove-particle-btn">
+          <div class="particle-container">
+          </div>
+        </div>
+        <div class="container-panel" data-key="1">
+          <input type="button" value="Add particle" class="add-particle-btn">
+          <input type="button" value="Remove particle" class="remove-particle-btn">
+          <div class="particle-container">
+          </div>
+        </div>
+        <div class="container-panel" data-key="2">
+          <input type="button" value="Add particle" class="add-particle-btn">
+          <input type="button" value="Remove particle" class="remove-particle-btn">
+          <div class="particle-container">
+          </div>
+        </div>
+        <div class="container-panel" data-key="3">
+          <input type="button" value="Add particle" class="add-particle-btn">
+          <input type="button" value="Remove particle" class="remove-particle-btn">
+          <div class="particle-container">
+          </div>
+        </div>
+      </div>
     </div>
     <script>
       var NUM_OF_PARTICLES_EACH = 50;
-      var NUM_OF_CONTAINERS = 1;
+      var NUM_OF_CONTAINERS = 4;
       (function() {
+
+        // HELPER FUNCTIONS
 
         var addParticles = function(containerSelector, n) {
           var particles = [];
@@ -71,26 +95,64 @@
           return particle;
         }
 
+        // INITIALIZE BUTTONS
+
+        document.querySelectorAll(".add-particle-btn").forEach(function(btn) {
+          btn.addEventListener("click", function() {
+            var key = parseInt(this.parentElement.getAttribute("data-key"));
+            var particles = addParticles(`.container-panel[data-key='${key}']>.particle-container`, 1);
+            avoidances[key].addParticleElement(particles[0]);
+          });
+        });
+
+        document.querySelectorAll(".remove-particle-btn").forEach(function(btn) {
+          btn.addEventListener("click", function() {
+            var key = parseInt(this.parentElement.getAttribute("data-key"));
+            var particle = removeParticle(`.container-panel[data-key='${key}']>.particle-container`);
+            if (particle) {
+              avoidances[key].removeParticleElement(particle);
+            }
+          });
+        });
+
+        // INITIALIZE CONTAINERS
+
         for (var containerIdx = 0; containerIdx < NUM_OF_CONTAINERS; ++containerIdx) {
-          addParticles("#my-container-"+containerIdx, NUM_OF_PARTICLES_EACH);
+          addParticles(`.container-panel[data-key='${containerIdx}']>.particle-container`, NUM_OF_PARTICLES_EACH);
         }
 
-        document.getElementById("add-particle-btn").addEventListener("click", function() {
-          var particles = addParticles("#my-container-0", 1);
-          avoidance.addParticleElement(particles[0]);
-        });
+        // INITIALIZE AVOIDANCE
 
-        document.getElementById("remove-particle-btn").addEventListener("click", function() {
-          var particle = removeParticle("#my-container-0");
-          if (particle) {
-            avoidance.removeParticleElement(particle);
-          }
-        });
+        var avoidanceOptions = [
+          {
+            factorMethod: {
+              scale: 0.7,
+            }
+          },
+          {
+            factorMethod: {
+              scale: 1.0,
+            }
+          },
+          {
+            factorMethod: {
+              scale: 2.5,
+            }
+          },
+          { factorMethod: "exponential" },
+        ];
 
-        var avoidance = new Avoidance(".my-container-class");
-        avoidance.start();
-        
+        var avoidances = [];
+
+        for (var containerIdx = 0; containerIdx < NUM_OF_CONTAINERS; ++containerIdx) {
+          var avoidance = new Avoidance(
+            `.container-panel[data-key='${containerIdx}']>.particle-container`,
+            avoidanceOptions[containerIdx]);
+          avoidance.start();
+          avoidances.push(avoidance);
+        }
+
       })();
-    </script>
+    </script> 
   </body>
 </html>
