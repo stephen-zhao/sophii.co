@@ -5,14 +5,14 @@ This repo is a collection of javascript files to support the website [sophii.co]
 
 ## Usage
 
-The easiest way to use the scripts from this repo is to CDN directly to the distributable JS files.
+The easiest way at the moment to use the scripts from this repo is to CDN directly to the distributable JS files, transpiled and ready to use directly in the browser. Once the scripts are properly packaged and published to npm, there will be other ways to use them.
 
 ### avoidance.js
 
 Use the following code in your HTML to import the script via CDN:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/stephen-zhao/sophii.co/dist/avoidance-0.1.js">
+<script src="https://cdn.jsdelivr.net/gh/stephen-zhao/sophii.co/packages/avoidance/dist/avoidance.var.min.js">
 ```
 
 Then, to use the avoidance effect, add the following javascript, replacing `#my-container` with the query selector for the container on which you want the effect to occur.
@@ -39,14 +39,15 @@ Use the following code in your HTML to import the script via CDN, after jQuery i
 ## Roadmap
 
 - `avoidance.js`:
-  - needs a major performance revamp (>50 particles)
   - support rotation animation
   - add typedefs in typescript (especially for the API)
+  - needs API documentation
+  - needs features highlight in README
+  - needs publish to NPM
 - `gallery-case-scroll.js`:
   - needs library-ification
-- general:
-  - needs API documentation
-  - NPM-ify?
+  - needs documentation
+  - basically needs a complete rework
 
 
 ## Extra Usage Tips
