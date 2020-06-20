@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "moduleResolution": "node",
+    "allowJs": true,
+    // Only use tsc for type-checking, so there is no emit
+    "noEmit": true,
+    "isolatedModules": true
+  },
+  "include": ["src/**/*"]
+}

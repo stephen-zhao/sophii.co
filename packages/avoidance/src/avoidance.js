@@ -6,7 +6,7 @@
 // All children of given containers will be animated to avoid the user's mouse.
 
 // The class which exposes the public API
-class Avoidance {
+export default class Avoidance {
   // input:
   //   containerSelector
   //    - css-selector string which specifies the elements
