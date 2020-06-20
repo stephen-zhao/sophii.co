@@ -42,24 +42,28 @@
         <div class="container-panel" data-key="0">
           <input type="button" value="Add particle" class="add-particle-btn">
           <input type="button" value="Remove particle" class="remove-particle-btn">
+          <span class="particle-count"></span>
           <div class="particle-container">
           </div>
         </div>
         <div class="container-panel" data-key="1">
           <input type="button" value="Add particle" class="add-particle-btn">
           <input type="button" value="Remove particle" class="remove-particle-btn">
+          <span class="particle-count"></span>
           <div class="particle-container">
           </div>
         </div>
         <div class="container-panel" data-key="2">
           <input type="button" value="Add particle" class="add-particle-btn">
           <input type="button" value="Remove particle" class="remove-particle-btn">
+          <span class="particle-count"></span>
           <div class="particle-container">
           </div>
         </div>
         <div class="container-panel" data-key="3">
           <input type="button" value="Add particle" class="add-particle-btn">
           <input type="button" value="Remove particle" class="remove-particle-btn">
+          <span class="particle-count"></span>
           <div class="particle-container">
           </div>
         </div>
@@ -102,6 +106,7 @@
             var key = parseInt(this.parentElement.getAttribute("data-key"));
             var particles = addParticles(`.container-panel[data-key='${key}']>.particle-container`, 1);
             avoidances[key].addParticleElement(particles[0]);
+            document.querySelector(`.container-panel[data-key='${key}']>.particle-count`).innerHTML = ++particleCounts[key];
           });
         });
 
@@ -111,6 +116,7 @@
             var particle = removeParticle(`.container-panel[data-key='${key}']>.particle-container`);
             if (particle) {
               avoidances[key].removeParticleElement(particle);
+              document.querySelector(`.container-panel[data-key='${key}']>.particle-count`).innerHTML = --particleCounts[key];
             }
           });
         });
@@ -120,6 +126,10 @@
         for (var containerIdx = 0; containerIdx < NUM_OF_CONTAINERS; ++containerIdx) {
           addParticles(`.container-panel[data-key='${containerIdx}']>.particle-container`, NUM_OF_PARTICLES_EACH);
         }
+        var particleCounts = new Array(NUM_OF_CONTAINERS).fill(NUM_OF_PARTICLES_EACH);
+        document.querySelectorAll('.container-panel>.particle-count').forEach(function(counter, key) {
+          counter.innerHTML = particleCounts[key];
+        });
 
         // INITIALIZE AVOIDANCE
 
