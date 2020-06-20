@@ -38,7 +38,6 @@ export default class Avoidance {
     this.trackedParticleElementsSet = new Set();
     // "fix" event listeners
     this.mouseMoveHandler = this.mouseMoveHandler.bind(this);
-    this.mouseClickTestHandler = this.mouseClickTestHandler.bind(this);
     // Create particles from all of the container's children
     // and add them to the list of tracked particles, if specified to do so
     if (addChildrenAsParticles) {
@@ -255,11 +254,9 @@ export default class Avoidance {
 
   registerEventHandlers(container) {
     container.addEventListener("mousemove", this.mouseMoveHandler);
-    container.addEventListener("click", this.mouseClickTestHandler);
   }
 
   deregisterEventHandlers(container) {
-    container.removeEventListener("click", this.mouseClickTestHandler);
     container.removeEventListener("mousemove", this.mouseMoveHandler);
   }
 
@@ -292,19 +289,6 @@ export default class Avoidance {
         particle.element.style.top = particleNewPos.y;
       }
     }, this);
-  }
-
-  mouseClickTestHandler(event) {
-    var datastring = this.trackedParticles.map(function (particle, idx) {
-      var particleString = "";
-      var id = particle.element.getAttribute("id");
-      particleString += `particle ${id !== null ? id : idx}\n`;
-      particleString += `original x = ${particle.originalPos.x}\n`;
-      particleString += `original y = ${particle.originalPos.y}\n`;
-      particleString += `-------------------\n`;
-      return particleString;
-    }).join("");
-    alert(datastring);
   }
 
   calculateAvoidanceFactor(originalDistance, elementSize, containerSizeScalar, method) {
