@@ -38,6 +38,9 @@ export default class Avoidance {
     this.trackedParticleElementsSet = new Set();
     // "fix" event listeners
     this.mouseMoveHandler = this.mouseMoveHandler.bind(this);
+    this.clickHandler = this.clickHandler.bind(this);
+    this.touchStartHandler = this.touchStartHandler.bind(this);
+    this.touchEndHandler = this.touchEndHandler.bind(this);
     // Create particles from all of the container's children
     // and add them to the list of tracked particles, if specified to do so
     if (addChildrenAsParticles) {
@@ -253,42 +256,101 @@ export default class Avoidance {
   }
 
   registerEventHandlers(container) {
+    container.addEventListener("touchend", this.touchEndHandler);
+    container.addEventListener("touchstart", this.touchStartHandler);
     container.addEventListener("mousemove", this.mouseMoveHandler);
+    container.addEventListener("click", this.clickHandler);
   }
 
   deregisterEventHandlers(container) {
+    container.removeEventListener("click", this.clickHandler);
     container.removeEventListener("mousemove", this.mouseMoveHandler);
+    container.removeEventListener("touchstart", this.touchStartHandler);
+    container.removeEventListener("touchend", this.touchEndHandler);
   }
 
   mouseMoveHandler(event) {
-    var container = event.currentTarget;
+    if (this.touchStarted || this.touchEnded) {
+      // Do not handle a mouseMove for touch events
+      event.preventDefault();
+    }
+    else {
+      var container = event.currentTarget;
+      var mousePos = { x: event.pageX - container.offsetLeft, y: event.pageY - container.offsetTop };
+      this.computeAvoidance(container, mousePos, this.renderImmediateAvoidance);
+    }
+  }
+
+  clickHandler(event) {
+    if (this.touchStarted || this.touchEnded) {
+      console.log("touch");
+      var container = event.currentTarget;
+      var touchPos = { x: event.pageX - container.offsetLeft, y: event.pageY - container.offsetTop };
+      this.computeAvoidance(container, touchPos, this.renderAnimatedAvoidance);
+      this.touchStarted = false;
+      this.touchEnded = false;
+    }
+    else {
+      console.log("click, not touch");
+    }
+  }
+
+  touchStartHandler(event) {
+    console.log("touchstart");
+    this.touchStarted = true;
+  }
+
+  touchEndHandler(event) {
+    console.log("touchend");
+    this.touchEnded = true;
+  }
+
+  computeAvoidance(container, userPos, renderCallback) {
     var containerSizeScalar = Avoidance.geometry.getRadius({ x: container.offsetWidth, y: container.offsetHeight });
-    // Determine the relative x and y of mouse position inside the container
-    var mousePos = { x: event.pageX - container.offsetLeft, y: event.pageY - container.offsetTop };
     this.trackedParticles.forEach(function (particle) {
       var particleSize = { width: particle.element.offsetWidth, height: particle.element.offsetHeight };
-      var particleOrigPosToCentreRelMouse = {
-        x: particle.originalPos.x + particleSize.width*1.0 / 2 - mousePos.x,
-        y: particle.originalPos.y + particleSize.height*1.0 / 2 - mousePos.y,
+      var particleOrigPosToCentreRelUser = {
+        x: particle.originalPos.x + particleSize.width*1.0 / 2 - userPos.x,
+        y: particle.originalPos.y + particleSize.height*1.0 / 2 - userPos.y,
       };
-      var particleOrigDistToCentreRelMouse = Avoidance.geometry.getRadius(particleOrigPosToCentreRelMouse);
-      var avoidanceFactor = this.calculateAvoidanceFactor(particleOrigDistToCentreRelMouse, particleSize, containerSizeScalar);
-      if (avoidanceFactor === NaN) {
-        particle.element.style.display = "none";
-      }
-      else {
-        var avoidanceDisplacement = this.calculateAvoidanceDisplacement(particleOrigPosToCentreRelMouse, avoidanceFactor);
-        var particleNewPos = {
-          x: particle.originalPos.x + avoidanceDisplacement.x,
-          y: particle.originalPos.y + avoidanceDisplacement.y,
-        };
-        if (particle.element.style.display === "none") {
-          particle.element.style.display = "";
-        }
-        particle.element.style.left = particleNewPos.x;
-        particle.element.style.top = particleNewPos.y;
-      }
+      var particleOrigDistToCentreRelUser = Avoidance.geometry.getRadius(particleOrigPosToCentreRelUser);
+      var avoidanceFactor = this.calculateAvoidanceFactor(particleOrigDistToCentreRelUser, particleSize, containerSizeScalar);
+      var avoidanceDisplacement = this.calculateAvoidanceDisplacement(particleOrigPosToCentreRelUser, avoidanceFactor);
+      renderCallback(avoidanceDisplacement, particle);
     }, this);
+  }
+
+  renderImmediateAvoidance(avoidanceDisplacement, particle) {
+    if (avoidanceDisplacement === null) {
+      particle.element.style.display = "none";
+    }
+    else {
+      var particleNewPos = {
+        x: particle.originalPos.x + avoidanceDisplacement.x,
+        y: particle.originalPos.y + avoidanceDisplacement.y,
+      };
+      if (particle.element.style.display === "none") {
+        particle.element.style.display = "";
+      }
+      particle.element.style.left = particleNewPos.x;
+      particle.element.style.top = particleNewPos.y;
+    }
+  }
+
+  renderAnimatedAvoidance(avoidanceDisplacement, particle) {
+    if (avoidanceDisplacement === null) {
+      particle.element.style.display = "none";
+    }
+    else {
+      var particleNewPos = {
+        x: particle.originalPos.x + avoidanceDisplacement.x,
+        y: particle.originalPos.y + avoidanceDisplacement.y,
+      };
+      if (particle.element.style.display === "none") {
+        particle.element.style.display = "";
+      }
+      Avoidance.animate.linear_move(particle.element, particleNewPos, 500);
+    }
   }
 
   calculateAvoidanceFactor(originalDistance, elementSize, containerSizeScalar, method) {
@@ -369,6 +431,9 @@ Avoidance.calculateAvoidanceDisplacement = {
   builtinMethods: {
     absolute_threshold: function(param_threshold_radius=80.0) {
       return function(particleOrigPosRelMouse, avoidanceFactor) {
+        if (avoidanceFactor === NaN) {
+          return null;
+        }
         var offset = {
           x: particleOrigPosRelMouse.x*avoidanceFactor,
           y: particleOrigPosRelMouse.y*avoidanceFactor,
@@ -388,6 +453,9 @@ Avoidance.calculateAvoidanceDisplacement = {
     },
     proportional_threshold: function(param_threshold_radius=20.0) {
       return function(particleOrigPosRelMouse, avoidanceFactor) {
+        if (avoidanceFactor === NaN) {
+          return null;
+        }
         var offset = {
           x: particleOrigPosRelMouse.x*avoidanceFactor,
           y: particleOrigPosRelMouse.y*avoidanceFactor,
@@ -405,6 +473,9 @@ Avoidance.calculateAvoidanceDisplacement = {
     },
     standard: function(param_threshold_radius=undefined) {
       return function(particleOrigPosRelMouse, avoidanceFactor) {
+        if (avoidanceFactor === NaN) {
+          return null;
+        }
         return {
           x: particleOrigPosRelMouse.x*avoidanceFactor,
           y: particleOrigPosRelMouse.y*avoidanceFactor,
@@ -426,6 +497,35 @@ Avoidance.dom = {
       x: element.offsetLeft + element.offsetWidth / 2 - (relativeTo ? relativeTo.offsetLeft : 0),
       y: element.offsetTop + element.offsetHeight / 2 - (relativeTo ? relativeTo.offsetTop : 0),
     };
+  }
+}
+
+Avoidance.animate = {
+  FRAME_DURATION: 10,
+  linear_move: function(element, endPoint, duration) {
+    const startPoint = {
+      x: element.offsetLeft,
+      y: element.offsetTop,
+    };
+    const delta_f = dt => ({
+      x: 1.0*dt*(endPoint.x - startPoint.x)/duration,
+      y: 1.0*dt*(endPoint.y - startPoint.y)/duration,
+    });
+    var time = 0;
+    var pos = startPoint;
+    const animation = setInterval(() => {
+      const delta_pos = delta_f(this.FRAME_DURATION);
+      time = time + this.FRAME_DURATION;
+      pos = {
+        x: pos.x + delta_pos.x,
+        y: pos.y + delta_pos.y,
+      };
+      element.style.left = pos.x;
+      element.style.top = pos.y;
+      if (time >= duration) {
+        clearInterval(animation);
+      }
+    }, this.FRAME_DURATION);
   }
 }
 
