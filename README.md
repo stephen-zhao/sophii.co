@@ -14,6 +14,8 @@ See the instructions below for each specific script and how to access the entry 
 
 ### avoidance.js
 
+![avoidance.js logo](packages/avoidance/branding/avoidancejs_logo.png)
+
 #### For CDN:
 
 Paste the following into your HTML, either inside `<head>` or at the end of `<body>`.
