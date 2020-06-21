@@ -275,16 +275,16 @@ export default class Avoidance {
       event.preventDefault();
     }
     else {
-      var container = event.currentTarget;
-      var mousePos = { x: event.pageX - container.offsetLeft, y: event.pageY - container.offsetTop };
+      const container = event.currentTarget;
+      const mousePos = { x: event.pageX - container.offsetLeft, y: event.pageY - container.offsetTop };
       this.computeAvoidance(container, mousePos, this.renderImmediateAvoidance);
     }
   }
 
   clickHandler(event) {
     if (this.touchStarted || this.touchEnded) {
-      var container = event.currentTarget;
-      var touchPos = { x: event.pageX - container.offsetLeft, y: event.pageY - container.offsetTop };
+      const container = event.currentTarget;
+      const touchPos = { x: event.pageX - container.offsetLeft, y: event.pageY - container.offsetTop };
       this.computeAvoidance(container, touchPos, this.renderAnimatedAvoidance);
       this.touchStarted = false;
       this.touchEnded = false;
@@ -303,16 +303,16 @@ export default class Avoidance {
   }
 
   computeAvoidance(container, userPos, renderCallback) {
-    var containerSizeScalar = Avoidance.geometry.getRadius({ x: container.offsetWidth, y: container.offsetHeight });
+    const containerSizeScalar = Avoidance.geometry.getRadius({ x: container.offsetWidth, y: container.offsetHeight });
     this.trackedParticles.forEach(function (particle) {
-      var particleSize = { width: particle.element.offsetWidth, height: particle.element.offsetHeight };
-      var particleOrigPosToCentreRelUser = {
+      const particleSize = { width: particle.element.offsetWidth, height: particle.element.offsetHeight };
+      const particleOrigPosToCentreRelUser = {
         x: particle.originalPos.x + particleSize.width*1.0 / 2 - userPos.x,
         y: particle.originalPos.y + particleSize.height*1.0 / 2 - userPos.y,
       };
-      var particleOrigDistToCentreRelUser = Avoidance.geometry.getRadius(particleOrigPosToCentreRelUser);
-      var avoidanceFactor = this.calculateAvoidanceFactor(particleOrigDistToCentreRelUser, particleSize, containerSizeScalar);
-      var avoidanceDisplacement = this.calculateAvoidanceDisplacement(particleOrigPosToCentreRelUser, avoidanceFactor);
+      const particleOrigDistToCentreRelUser = Avoidance.geometry.getRadius(particleOrigPosToCentreRelUser);
+      const avoidanceFactor = this.calculateAvoidanceFactor(particleOrigDistToCentreRelUser, particleSize, containerSizeScalar);
+      const avoidanceDisplacement = this.calculateAvoidanceDisplacement(particleOrigPosToCentreRelUser, avoidanceFactor);
       renderCallback(avoidanceDisplacement, particle);
     }, this);
   }
@@ -322,7 +322,7 @@ export default class Avoidance {
       particle.element.style.display = "none";
     }
     else {
-      var particleNewPos = {
+      const particleNewPos = {
         x: particle.originalPos.x + avoidanceDisplacement.x,
         y: particle.originalPos.y + avoidanceDisplacement.y,
       };
@@ -343,15 +343,15 @@ export default class Avoidance {
         x: particle.element.offsetLeft,
         y: particle.element.offsetTop,
       };
-      var particleNewPos = {
+      const particleNewPos = {
         x: particle.originalPos.x + avoidanceDisplacement.x,
         y: particle.originalPos.y + avoidanceDisplacement.y,
       };
       if (particle.element.style.display === "none") {
         particle.element.style.display = "";
       }
-      Avoidance.animate.quadratic_bezier_move(particle.element, particleOldPos, particle.originalPos, particleNewPos, 500);
-      //Avoidance.animate.linear_move(particle.element, particleOldPos, particleNewPos, 500);
+      const path = Avoidance.animate.paths.quadraticBezier(particleOldPos, particle.originalPos, particleNewPos);
+      Avoidance.animate.move(particle.element, path, 1000, Avoidance.animate.timings.easeOutExpo);
     }
   }
 
@@ -504,50 +504,44 @@ Avoidance.dom = {
 
 Avoidance.animate = {
   FRAME_DURATION: 10.0,
-  linear_move: function(element, p0, p1, duration) {
-    const B_fn = s => ({
-      x: p0.x + s*(p1.x - p0.x),
-      y: p0.y + s*(p1.y - p0.y),
-    });
+  timings: {
+    linear: duration => t => t/duration,
+    easeOutCubic: duration => t => 1+Math.pow(t/duration-1, 3),
+    easeOutExpo: duration => t => 1-Math.pow(2, -10*t/duration),
+  },
+  paths: {
+    linear: function(p0, p1) {
+      return s => ({
+        x: p0.x + s*(p1.x - p0.x),
+        y: p0.y + s*(p1.y - p0.y),
+      });
+    },
+    quadraticBezier: function(p0, p1, p2) {
+      return s => ({
+        x: p1.x + (1.0-s)*(1.0-s)*(p0.x-p1.x) + s*s*(p2.x-p1.x),
+        y: p1.y + (1.0-s)*(1.0-s)*(p0.y-p1.y) + s*s*(p2.y-p1.y),
+      }); // 0 <= s <= 1
+    },
+  },
+  move: function(element, path, duration, timing) {
     var time = 0;
     var distance = 0;
+    const distanceFromTime = timing(duration);
     const animation = setInterval(() => {
       // Check for final condition
       if (time >= duration) {
         clearInterval(animation);
       }
       // Calculate position
-      const pos = B_fn(distance);
+      const pos = path(distance);
       // Render
       element.style.left = pos.x;
       element.style.top = pos.y;
       // Update vars for next iteration
       time = time + this.FRAME_DURATION;
-      distance = time/duration
+      distance = distanceFromTime(time);
     }, this.FRAME_DURATION);
   },
-  quadratic_bezier_move: function(element, p0, p1, p2, duration) {
-    const B_fn = s => ({
-      x: p1.x + (1.0-s)*(1.0-s)*(p0.x-p1.x) + s*s*(p2.x-p1.x),
-      y: p1.y + (1.0-s)*(1.0-s)*(p0.y-p1.y) + s*s*(p2.y-p1.y),
-    }); // 0 <= s <= 1
-    var time = 0;
-    var distance = 0;
-    const animation = setInterval(() => {
-      // Check for final condition
-      if (time >= duration) {
-        clearInterval(animation);
-      }
-      // Calculate position
-      const pos = B_fn(distance);
-      // Render
-      element.style.left = pos.x;
-      element.style.top = pos.y;
-      // Update vars for next iteration
-      time = time + this.FRAME_DURATION;
-      distance = time/duration
-    }, this.FRAME_DURATION);
-  }
 }
 
 Avoidance.Particle = class {
