@@ -15,7 +15,7 @@ See the instructions below for each specific script and how to access the entry 
 ### avoidance.js
 
 <p align="center">
-  <img alt="avoidance.js logo" src="https://raw.githubusercontent.com/stephen-zhao/sophii.co/master/packages/avoidance/branding/avoidancejs_logo.png"/>
+  <a href="https://github.com/stephen-zhao/sophii.co/master/packages/avoidance"><img alt="avoidance.js logo" src="https://raw.githubusercontent.com/stephen-zhao/sophii.co/master/packages/avoidance/branding/avoidancejs_logo.png"/></a>
 </p>
 <p align="center">
     Make HTML elements avoid your mouse cursor and touches, beautifully.
