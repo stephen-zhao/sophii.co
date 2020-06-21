@@ -10,7 +10,7 @@
   <img alt="avoidance.js demo animation" src="docs/demo.gif"/>
 </p>
 <p align="center">
-  Latest Version: 0.1.1
+  <a href="https://badge.fury.io/js/%40zhaostephen%2Favoidance"><img src="https://badge.fury.io/js/%40zhaostephen%2Favoidance.svg" alt="npm version" height="18"></a>
 </p>
 
 ## Quick Start
