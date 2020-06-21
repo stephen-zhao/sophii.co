@@ -2,9 +2,11 @@
 
 <p align="center">
   <img alt="avoidance.js logo" src="branding/avoidancejs_logo.png"/>
-  <p>
+</p>
+<p align="center">
     Make HTML elements avoid your mouse cursor and touches, beautifully.
-  </p>
+</p>
+<p align="center">
   <img alt="avoidance.js demo animation" src="docs/demo.gif"/>
 </p>
 
