@@ -43,7 +43,7 @@ npm install --save @zhaostephen/avoidance
 If using with modules, first import the library's main entry point. If using directly in browser, skip this step.
 
 ```js
-  import Avoidance from "@zhaostephen/avoidance";
+import Avoidance from "@zhaostephen/avoidance";
 ```
 
 #### Create and run
@@ -104,14 +104,12 @@ An `AvoidanceUserOptions` object can take any combination of the following *opti
 
 It can be either a string or an object.
 
-If a string, it can be one of `"inverse"`, `"power_inverse"`, or `"exponential"`.
-
-If an object, it can contain any combination of the following keys and values:
-
-`name`: one of `"inverse"`, `"power_inverse"`, or `"exponential"`.
-`scale`: a floating-point number.
-`offset`: a floating-point number.
-`power`: a floating-point number.
+- If a string, it can be one of `"inverse"`, `"power_inverse"`, or `"exponential"`.
+- If an object, it can contain any combination of the following keys and values:
+  - `name`: one of `"inverse"`, `"power_inverse"`, or `"exponential"`.
+  - `scale`: a floating-point number.
+  - `offset`: a floating-point number.
+  - `power`: a floating-point number.
 
 The default behaviour is
 
@@ -134,12 +132,10 @@ If only a name is provided, the default value for the remaining keys will adjust
 
 It can be either a string or an object.
 
-If a string, it can be one of `"standard"`, `"proportional_threshold"`, or `"absolute_threshold"`.
-
-If an object, it can contain any combination of the following keys and values:
-
-`name`: one of `"standard"`, `"proportional_threshold"`, or `"absolute_threshold"`.
-`thresholdRadius`: a floating-point number
+- If a string, it can be one of `"standard"`, `"proportional_threshold"`, or `"absolute_threshold"`.
+- If an object, it can contain any combination of the following keys and values:
+  - `name`: one of `"standard"`, `"proportional_threshold"`, or `"absolute_threshold"`.
+  - `thresholdRadius`: a floating-point number
 
 The default behaviour is
 
