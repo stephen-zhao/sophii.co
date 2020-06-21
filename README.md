@@ -16,6 +16,10 @@ See the instructions below for each specific script and how to access the entry 
 
 ![avoidance.js logo](packages/avoidance/branding/avoidancejs_logo.png)
 
+Make HTML elements avoid your mouse cursor and touches, beautifully.
+
+![avoidance.js demo](packages/avoidance/docs/demo.gif)
+
 #### For CDN:
 
 Paste the following into your HTML, either inside `<head>` or at the end of `<body>`.

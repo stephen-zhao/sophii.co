@@ -2,6 +2,10 @@
 
 ![avoidance.js logo](branding/avoidancejs_logo.png)
 
+Make HTML elements avoid your mouse cursor and touches, beautifully.
+
+![avoidance.js demo](docs/demo.gif)
+
 ## Quick Start
 
 The two easiest ways to use **avoidance.js** are
