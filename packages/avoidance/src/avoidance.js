@@ -353,8 +353,8 @@ export default class Avoidance {
       if (particle.element.style.display === "none") {
         particle.element.style.display = "";
       }
-      particle.element.style.left = particleNewPos.x;
-      particle.element.style.top = particleNewPos.y;
+      particle.element.style.left = particleNewPos.x+"px";
+      particle.element.style.top = particleNewPos.y+"px";
     }
   }
 
@@ -561,8 +561,8 @@ Avoidance.animate = {
       // Calculate position
       const pos = pathing(distance);
       // Render
-      element.style.left = pos.x;
-      element.style.top = pos.y;
+      element.style.left = pos.x+"px";
+      element.style.top = pos.y+"px";
       // Update vars for next iteration
       time = time + this.FRAME_DURATION;
       distance = distanceFromTime(time);
