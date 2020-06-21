@@ -1,29 +1,52 @@
 # sophii.co working files
 
-This repo is a collection of javascript files to support the website [sophii.co](sophii.co).
+This repo is a collection of javascript files to support the website [sophii.co](sophii.co). There are scripts for ["avoidance cloud" effect](packages/avoidance/README.md) and for creating a scrollwheel side-scrolling page.
 
 
-## Usage
+## Quick Start
 
-The easiest way at the moment to use the scripts from this repo is to CDN directly to the distributable JS files, transpiled and ready to use directly in the browser. Once the scripts are properly packaged and published to npm, there will be other ways to use them.
+The two easiest ways at the moment to use the scripts from this repo are
+
+1. to CDN directly to the distributable JS files, transpiled and ready to use directly in the browser; or
+2. to install to your project via a package manager such as npm or yarn.
+
+See the instructions below for each specific script and how to access the entry points.
 
 ### avoidance.js
 
-Use the following code in your HTML to import the script via CDN:
+#### For CDN:
+
+Paste the following into your HTML, either inside `<head>` or at the end of `<body>`.
 
 ```html
 <script src="https://cdn.jsdelivr.net/gh/stephen-zhao/sophii.co/packages/avoidance/dist/avoidance.var.min.js">
 ```
 
-Then, to use the avoidance effect, add the following javascript, replacing `#my-container` with the query selector for the container on which you want the effect to occur.
+#### For Packaged:
+
+Run one of the following:
+```sh
+yarn add @zhaostephen/avoidance
+```
+```sh
+npm install --save @zhaostephen/avoidance
+```
+
+#### Usage:
+
+Add the following javascript.
 
 ```js
     new Avoidance('#my-container').start();
 ```
 
-See extra usage notes below.
+Replace `#my-container` with the query selector for the container on which you want the mouse-over/touch effect to occur. All children elements will then be animated as particles.
+
+For more details on the what customizable options and functionality are available, see the [avoidance.js readme](packages/avoidance/README.md).
 
 ### gallery-case-scroll.js
+
+> Note: This script is not yet available in the general library form, and therefore cannot yet be conveniently used. A library-ification is scheduled to be done eventually.
 
 This script currently requires `jQuery`. See <https://code.jquery.com/>.
 
@@ -32,9 +55,6 @@ Use the following code in your HTML to import the script via CDN, after jQuery i
 ```html
 <script src="https://cdn.jsdelivr.net/gh/stephen-zhao/sophii.co/dist/gallery-case-scroll-v0.3.2.txt">
 ```
-
-> Note: This script is not yet available in the general library form, and therefore cannot yet be conveniently used. A library-ification is scheduled to be done eventually.
-
 
 ## Roadmap
 
