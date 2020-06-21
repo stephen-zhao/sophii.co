@@ -14,11 +14,11 @@ See the instructions below for each specific script and how to access the entry 
 
 ### avoidance.js
 
-![avoidance.js logo](packages/avoidance/branding/avoidancejs_logo.png)
-
-Make HTML elements avoid your mouse cursor and touches, beautifully.
-
-![avoidance.js demo](packages/avoidance/docs/demo.gif)
+<p align="center">
+  <img alt="avoidance.js logo" src="packages/avoidance/branding/avoidancejs_logo.png"/>
+  Make HTML elements avoid your mouse cursor and touches, beautifully.
+  <img alt="avoidance.js demo animation" src="packages/avoidance/docs/demo.gif"/>
+</p>
 
 #### For CDN:
 
