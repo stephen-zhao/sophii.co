@@ -61,7 +61,7 @@ Use the following code in your HTML to import the script via CDN, after jQuery i
 ## Roadmap
 
 - `avoidance.js`:
-  - See [TODO](packages/avoidance/README.md#-TODO)
+  - See [TODO](packages/avoidance/README.md#todo)
 - `gallery-case-scroll.js`:
   - needs library-ification
   - needs documentation
