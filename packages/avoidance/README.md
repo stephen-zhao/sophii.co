@@ -25,7 +25,7 @@ The two easiest ways to use **avoidance.js** are
 Paste the following into your HTML, either inside `<head>` or at the end of `<body>`, before any javascript that makes use of it.
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/stephen-zhao/sophii.co/packages/avoidance/dist/avoidance.var.min.js">
+<script src="https://cdn.jsdelivr.net/npm/@zhaostephen/avoidance@0.1.1/dist/avoidance.var.min.js">
 ```
 
 ### To install to node project:

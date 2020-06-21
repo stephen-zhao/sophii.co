@@ -36,7 +36,7 @@ See the instructions below for each specific script and how to access the entry 
 Paste the following into your HTML, either inside `<head>` or at the end of `<body>`.
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/stephen-zhao/sophii.co/packages/avoidance/dist/avoidance.var.min.js">
+<script src="https://cdn.jsdelivr.net/npm/@zhaostephen/avoidance@0.1.1/dist/avoidance.var.min.js">
 ```
 
 #### For Packaged:
