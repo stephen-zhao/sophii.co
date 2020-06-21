@@ -56,10 +56,107 @@ new Avoidance('#my-container').start();
 
 Replace `#my-container` with the query selector for the container on which you want the mouse-over/touch effect to occur. All children elements will then be animated as particles.
 
+## API
+
+#### Constructor
+
+```js
+new Avoidance(containerSelector: string, options: AvoidanceUserOptions?, addChildrenAsParticles: boolean?)
+```
+
+`containerSelector`: a query selector (similar to CSS selector) that specifies which elements will activate the avoidance effect when moused over or touched.
+
+`options`: \[optional\] a options object that specifies parameters for how the avoidance effect behaves. Defaults to `{}`. See the [options section](#options) below for what can be tweaked!
+
+`addChildrenAsParticles`: \[optional\] a boolean that specifies whether or not the children of the specified containers will be automatically added as particles upon instantiation. Defaults to `true`.
+
+#### Other methods
+
+> TODO: Documentation for other methods will be added later.
+
+## Options
+
+The `Avoidance` constructor takes in an options object as its second parameter. The options object has the following keys (and sub-keys...).
+
+#### factorMethod
+
+`factorMethod` specifies what method to use to determine the avoidance distance multiplier.
+
+It can be either a string or an object.
+
+If a string, it can be one of `"inverse"`, `"power_inverse"`, or `"exponential"`.
+
+If an object, it can contain any combination of the following keys and values:
+
+`name`: one of `"inverse"`, `"power_inverse"`, or `"exponential"`.
+`scale`: a floating-point number.
+`offset`: a floating-point number.
+`power`: a floating-point number.
+
+The default behaviour is
+
+```js
+{
+  name: "power_inverse",
+  scale: 1.0,
+  offset: 0.0,
+  power: 1.6,
+}
+```
+
+This may be used as a reference point for modifying the values.
+
+If only a name is provided, the default value for the remaining keys will adjust accordingly.
+
+#### displacementMethod
+
+`displacementMethod` specifies what method to use to calculate avoidance displacement, given the distance multiplier.
+
+It can be either a string or an object.
+
+If a string, it can be one of `"standard"`, `"proportional_threshold"`, or `"absolute_threshold"`.
+
+If an object, it can contain any combination of the following keys and values:
+
+`name`: one of `"standard"`, `"proportional_threshold"`, or `"absolute_threshold"`.
+`thresholdRadius`: a floating-point number
+
+The default behaviour is
+
+```js
+{
+  name: "absolute_threshold",
+  thresholdRadius: 80.0,
+}
+```
+
+This may be used as a reference point for modifying the values.
+
+If only a name is provided, the default value for `thresholdRadius` will adjust accordingly.
+
+#### timing
+
+`timing` is a string that specifies an easing for the touch animations.
+
+It can be one of `"linear"`, `"easeOutCubic"`, or `"easeOutExpo"`.
+
+The default value is `"easeOutExpo"`.
+
+#### pathing
+
+`pathing` is a string that specifies the path taken by touch animations.
+
+It can be one of `"linear"` or `"bezierQuad"`.
+
+The default value is `"bezierQuad"`.
+
+#### additional options
+
+> TODO: additional options will come in the future. Stay on the lookout!
+
+
 ## TODO
 
 - support rotation animation
-- add typedefs in typescript (especially for the API)
-- needs API documentation
-- needs features highlight in README
-- needs documentation for available options
+- add typedefs in typescript
+- needs further API documentation
