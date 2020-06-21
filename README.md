@@ -39,7 +39,6 @@ Use the following code in your HTML to import the script via CDN, after jQuery i
 ## Roadmap
 
 - `avoidance.js`:
-  - support for mobile "touch"
   - support rotation animation
   - add typedefs in typescript (especially for the API)
   - needs API documentation
