@@ -18,11 +18,15 @@ export default class Avoidance {
   //        scale: a number
   //        offset: a number
   //        power: a number
-  //      }
+  //      },
   //      displacementMethod: {
   //        name: one of "standard", "proportional_threshold", or "absolute_threshold"
   //        thresholdRadius: a number
-  //      }
+  //      },
+  //      timing: one of
+  //        "linear", "easeOutCubic", "easeOutExpo"
+  //      pathing: one of
+  //        "linear", "bezierQuad"
   //   addChildrenAsParticles
   //    - boolean which specifies whether or not the children
   //      of the containers are added initially as tracked
@@ -135,6 +139,26 @@ export default class Avoidance {
         options.displacementMethod.name = undefined;
         options.displacementMethod.thresholdRadius = undefined;
       }
+    }
+
+    // Process timings
+    if ("timing" in userOptions
+        && (typeof userOptions.timing === "string")
+        && (userOptions.timing in Avoidance.animate.timings)) {
+      options.timing = Avoidance.animate.timings[userOptions.timing];
+    }
+    else {
+      options.timing = Avoidance.animate.timings.easeOutExpo;
+    }
+    
+    // Process pathing
+    if ("pathing" in userOptions
+        && (typeof userOptions.pathing === "string")
+        && (userOptions.pathing in Avoidance.animate.paths)) {
+      options.pathing = userOptions.pathing;
+    }
+    else {
+      options.pathing = "bezierQuad";
     }
 
     return options;
@@ -277,7 +301,7 @@ export default class Avoidance {
     else {
       const container = event.currentTarget;
       const mousePos = { x: event.pageX - container.offsetLeft, y: event.pageY - container.offsetTop };
-      this.computeAvoidance(container, mousePos, this.renderImmediateAvoidance);
+      this.computeAvoidance(container, mousePos, this.renderImmediateAvoidance.bind(this));
     }
   }
 
@@ -285,7 +309,7 @@ export default class Avoidance {
     if (this.touchStarted || this.touchEnded) {
       const container = event.currentTarget;
       const touchPos = { x: event.pageX - container.offsetLeft, y: event.pageY - container.offsetTop };
-      this.computeAvoidance(container, touchPos, this.renderAnimatedAvoidance);
+      this.computeAvoidance(container, touchPos, this.renderAnimatedAvoidance.bind(this));
       this.touchStarted = false;
       this.touchEnded = false;
     }
@@ -350,8 +374,10 @@ export default class Avoidance {
       if (particle.element.style.display === "none") {
         particle.element.style.display = "";
       }
-      const path = Avoidance.animate.paths.quadraticBezier(particleOldPos, particle.originalPos, particleNewPos);
-      Avoidance.animate.move(particle.element, path, 1000, Avoidance.animate.timings.easeOutExpo);
+      const pathing = this.options.pathing === "bezierQuad"
+        ? Avoidance.animate.paths.bezierQuad(particleOldPos, particle.originalPos, particleNewPos)
+        : Avoidance.animate.paths.linear(particleOldPos, particleNewPos);
+      Avoidance.animate.move(particle.element, pathing, 1000, this.options.timing);
     }
   }
 
@@ -516,14 +542,14 @@ Avoidance.animate = {
         y: p0.y + s*(p1.y - p0.y),
       });
     },
-    quadraticBezier: function(p0, p1, p2) {
+    bezierQuad: function(p0, p1, p2) {
       return s => ({
         x: p1.x + (1.0-s)*(1.0-s)*(p0.x-p1.x) + s*s*(p2.x-p1.x),
         y: p1.y + (1.0-s)*(1.0-s)*(p0.y-p1.y) + s*s*(p2.y-p1.y),
       }); // 0 <= s <= 1
     },
   },
-  move: function(element, path, duration, timing) {
+  move: function(element, pathing, duration, timing) {
     var time = 0;
     var distance = 0;
     const distanceFromTime = timing(duration);
@@ -533,7 +559,7 @@ Avoidance.animate = {
         clearInterval(animation);
       }
       // Calculate position
-      const pos = path(distance);
+      const pos = pathing(distance);
       // Render
       element.style.left = pos.x;
       element.style.top = pos.y;
