@@ -9,6 +9,9 @@
 <p align="center">
   <img alt="avoidance.js demo animation" src="docs/demo.gif"/>
 </p>
+<p align="center">
+  Latest Version: 0.1.1
+</p>
 
 ## Quick Start
 
@@ -56,7 +59,7 @@ new Avoidance('#my-container').start();
 
 Replace `#my-container` with the query selector for the container on which you want the mouse-over/touch effect to occur. All children elements will then be animated as particles.
 
-## API
+## API Reference
 
 #### Constructor
 
@@ -64,11 +67,9 @@ Replace `#my-container` with the query selector for the container on which you w
 new Avoidance(containerSelector: string, options?: AvoidanceUserOptions, addChildrenAsParticles?: boolean)
 ```
 
-`containerSelector`: a query selector (similar to CSS selector) that specifies which elements will activate the avoidance effect when moused over or touched.
-
-`options` *\[optional\]*:  a options object that specifies parameters for how the avoidance effect behaves. Defaults to `{}`. See the [options section](#configuration-options) below for what can be tweaked!
-
-`addChildrenAsParticles` *\[optional\]*: a boolean that specifies whether or not the children of the specified containers will be automatically added as particles upon instantiation. Defaults to `true`.
+- `containerSelector`: a query selector (similar to CSS selector) that specifies which elements will activate the avoidance effect when moused over or touched.
+- `options` *\[optional\]*:  a options object that specifies parameters for how the avoidance effect behaves. Defaults to `{}`. See the [options section](#configuration-options) below for what can be tweaked!
+- `addChildrenAsParticles` *\[optional\]*: a boolean that specifies whether or not the children of the specified containers will be automatically added as particles upon instantiation. Defaults to `true`.
 
 #### Other methods
 
