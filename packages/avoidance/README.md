@@ -1,13 +1,13 @@
 # avoidance.js
 
 <p align="center">
-  <img alt="avoidance.js logo" src="branding/avoidancejs_logo.png"/>
+  <img alt="avoidance.js logo" src="https://raw.githubusercontent.com/stephen-zhao/sophii.co/master/packages/avoidance/branding/avoidancejs_logo.png"/>
 </p>
 <p align="center">
     Make HTML elements avoid your mouse cursor and touches, beautifully.
 </p>
 <p align="center">
-  <img alt="avoidance.js demo animation" src="docs/demo.gif"/>
+  <img alt="avoidance.js demo animation" src="https://raw.githubusercontent.com/stephen-zhao/sophii.co/master/packages/avoidance/docs/demo.gif"/>
 </p>
 <p align="center">
   <a href="https://badge.fury.io/js/%40zhaostephen%2Favoidance"><img src="https://badge.fury.io/js/%40zhaostephen%2Favoidance.svg" alt="npm version" height="18"></a>

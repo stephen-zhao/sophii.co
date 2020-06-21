@@ -15,17 +15,13 @@ See the instructions below for each specific script and how to access the entry 
 ### avoidance.js
 
 <p align="center">
-  <a href="packages/avoidance">
-    <img alt="avoidance.js logo" src="packages/avoidance/branding/avoidancejs_logo.png"/>
-  </a>
+  <img alt="avoidance.js logo" src="https://raw.githubusercontent.com/stephen-zhao/sophii.co/master/packages/avoidance/branding/avoidancejs_logo.png"/>
 </p>
 <p align="center">
     Make HTML elements avoid your mouse cursor and touches, beautifully.
 </p>
 <p align="center">
-  <a href="packages/avoidance">
-    <img alt="avoidance.js demo animation" src="packages/avoidance/docs/demo.gif"/>
-  </a>
+  <img alt="avoidance.js demo animation" src="https://raw.githubusercontent.com/stephen-zhao/sophii.co/master/packages/avoidance/docs/demo.gif"/>
 </p>
 <p align="center">
   <a href="https://badge.fury.io/js/%40zhaostephen%2Favoidance"><img src="https://badge.fury.io/js/%40zhaostephen%2Favoidance.svg" alt="npm version" height="18"></a>
