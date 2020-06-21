@@ -16,7 +16,9 @@ See the instructions below for each specific script and how to access the entry 
 
 <p align="center">
   <img alt="avoidance.js logo" src="packages/avoidance/branding/avoidancejs_logo.png"/>
-  Make HTML elements avoid your mouse cursor and touches, beautifully.
+  <p>
+    Make HTML elements avoid your mouse cursor and touches, beautifully.
+  </p>
   <img alt="avoidance.js demo animation" src="packages/avoidance/docs/demo.gif"/>
 </p>
 
