@@ -15,13 +15,20 @@ See the instructions below for each specific script and how to access the entry 
 ### avoidance.js
 
 <p align="center">
-  <img alt="avoidance.js logo" src="packages/avoidance/branding/avoidancejs_logo.png"/>
+  <a href="packages/avoidance">
+    <img alt="avoidance.js logo" src="packages/avoidance/branding/avoidancejs_logo.png"/>
+  </a>
 </p>
 <p align="center">
     Make HTML elements avoid your mouse cursor and touches, beautifully.
 </p>
 <p align="center">
-  <img alt="avoidance.js demo animation" src="packages/avoidance/docs/demo.gif"/>
+  <a href="packages/avoidance">
+    <img alt="avoidance.js demo animation" src="packages/avoidance/docs/demo.gif"/>
+  </a>
+</p>
+<p align="center">
+  Latest Version: 0.1.1
 </p>
 
 #### For CDN:
@@ -52,7 +59,7 @@ new Avoidance('#my-container').start();
 
 Replace `#my-container` with the query selector for the container on which you want the mouse-over/touch effect to occur. All children elements will then be animated as particles.
 
-For more details on the what customizable options and functionality are available, see the [avoidance.js readme](packages/avoidance/README.md).
+For more details on the what customizable options and functionality are available, see the [avoidance.js readme](packages/avoidance).
 
 ### gallery-case-scroll.js
 
@@ -69,7 +76,7 @@ Use the following code in your HTML to import the script via CDN, after jQuery i
 ## Roadmap
 
 - `avoidance.js`:
-  - See [TODO](packages/avoidance/README.md#todo)
+  - See [TODO](packages/avoidance#todo)
 - `gallery-case-scroll.js`:
   - needs library-ification
   - needs documentation
