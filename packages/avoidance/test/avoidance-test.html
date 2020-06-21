@@ -70,7 +70,6 @@
       </div>
     </div>
     <script>
-      var NUM_OF_PARTICLES_EACH = 50;
       var NUM_OF_CONTAINERS = 4;
       (function() {
 
@@ -123,10 +122,13 @@
 
         // INITIALIZE CONTAINERS
 
-        for (var containerIdx = 0; containerIdx < NUM_OF_CONTAINERS; ++containerIdx) {
-          addParticles(`.container-panel[data-key='${containerIdx}']>.particle-container`, NUM_OF_PARTICLES_EACH);
+        var initialParticleCounts = [
+          1, 50, 50, 50
+        ]
+        var particleCounts = Array.from(initialParticleCounts)
+        for (var i = 0; i < NUM_OF_CONTAINERS; ++i) {
+          addParticles(`.container-panel[data-key='${i}']>.particle-container`, initialParticleCounts[i]);
         }
-        var particleCounts = new Array(NUM_OF_CONTAINERS).fill(NUM_OF_PARTICLES_EACH);
         document.querySelectorAll('.container-panel>.particle-count').forEach(function(counter, key) {
           counter.innerHTML = particleCounts[key];
         });

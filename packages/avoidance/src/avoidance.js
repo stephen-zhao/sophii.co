@@ -283,7 +283,6 @@ export default class Avoidance {
 
   clickHandler(event) {
     if (this.touchStarted || this.touchEnded) {
-      console.log("touch");
       var container = event.currentTarget;
       var touchPos = { x: event.pageX - container.offsetLeft, y: event.pageY - container.offsetTop };
       this.computeAvoidance(container, touchPos, this.renderAnimatedAvoidance);
@@ -291,17 +290,15 @@ export default class Avoidance {
       this.touchEnded = false;
     }
     else {
-      console.log("click, not touch");
+      // click, but not touched
     }
   }
 
   touchStartHandler(event) {
-    console.log("touchstart");
     this.touchStarted = true;
   }
 
   touchEndHandler(event) {
-    console.log("touchend");
     this.touchEnded = true;
   }
 
@@ -342,6 +339,10 @@ export default class Avoidance {
       particle.element.style.display = "none";
     }
     else {
+      const particleOldPos = {
+        x: particle.element.offsetLeft,
+        y: particle.element.offsetTop,
+      };
       var particleNewPos = {
         x: particle.originalPos.x + avoidanceDisplacement.x,
         y: particle.originalPos.y + avoidanceDisplacement.y,
@@ -349,7 +350,8 @@ export default class Avoidance {
       if (particle.element.style.display === "none") {
         particle.element.style.display = "";
       }
-      Avoidance.animate.linear_move(particle.element, particleNewPos, 500);
+      Avoidance.animate.quadratic_bezier_move(particle.element, particleOldPos, particle.originalPos, particleNewPos, 500);
+      //Avoidance.animate.linear_move(particle.element, particleOldPos, particleNewPos, 500);
     }
   }
 
@@ -501,30 +503,49 @@ Avoidance.dom = {
 }
 
 Avoidance.animate = {
-  FRAME_DURATION: 10,
-  linear_move: function(element, endPoint, duration) {
-    const startPoint = {
-      x: element.offsetLeft,
-      y: element.offsetTop,
-    };
-    const delta_f = dt => ({
-      x: 1.0*dt*(endPoint.x - startPoint.x)/duration,
-      y: 1.0*dt*(endPoint.y - startPoint.y)/duration,
+  FRAME_DURATION: 10.0,
+  linear_move: function(element, p0, p1, duration) {
+    const B_fn = s => ({
+      x: p0.x + s*(p1.x - p0.x),
+      y: p0.y + s*(p1.y - p0.y),
     });
     var time = 0;
-    var pos = startPoint;
+    var distance = 0;
     const animation = setInterval(() => {
-      const delta_pos = delta_f(this.FRAME_DURATION);
-      time = time + this.FRAME_DURATION;
-      pos = {
-        x: pos.x + delta_pos.x,
-        y: pos.y + delta_pos.y,
-      };
-      element.style.left = pos.x;
-      element.style.top = pos.y;
+      // Check for final condition
       if (time >= duration) {
         clearInterval(animation);
       }
+      // Calculate position
+      const pos = B_fn(distance);
+      // Render
+      element.style.left = pos.x;
+      element.style.top = pos.y;
+      // Update vars for next iteration
+      time = time + this.FRAME_DURATION;
+      distance = time/duration
+    }, this.FRAME_DURATION);
+  },
+  quadratic_bezier_move: function(element, p0, p1, p2, duration) {
+    const B_fn = s => ({
+      x: p1.x + (1.0-s)*(1.0-s)*(p0.x-p1.x) + s*s*(p2.x-p1.x),
+      y: p1.y + (1.0-s)*(1.0-s)*(p0.y-p1.y) + s*s*(p2.y-p1.y),
+    }); // 0 <= s <= 1
+    var time = 0;
+    var distance = 0;
+    const animation = setInterval(() => {
+      // Check for final condition
+      if (time >= duration) {
+        clearInterval(animation);
+      }
+      // Calculate position
+      const pos = B_fn(distance);
+      // Render
+      element.style.left = pos.x;
+      element.style.top = pos.y;
+      // Update vars for next iteration
+      time = time + this.FRAME_DURATION;
+      distance = time/duration
     }, this.FRAME_DURATION);
   }
 }
