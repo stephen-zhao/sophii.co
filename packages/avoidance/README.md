@@ -51,7 +51,7 @@ If using with modules, first import the library's main entry point. If using dir
 Then simply instantiate an `Avoidance` on the container of your choice, and call start.
 
 ```js
-    new Avoidance('#my-container').start();
+new Avoidance('#my-container').start();
 ```
 
 Replace `#my-container` with the query selector for the container on which you want the mouse-over/touch effect to occur. All children elements will then be animated as particles.
