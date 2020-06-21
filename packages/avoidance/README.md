@@ -60,23 +60,43 @@ Replace `#my-container` with the query selector for the container on which you w
 
 #### Constructor
 
-```js
-new Avoidance(containerSelector: string, options: AvoidanceUserOptions?, addChildrenAsParticles: boolean?)
+```ts
+new Avoidance(containerSelector: string, options?: AvoidanceUserOptions, addChildrenAsParticles?: boolean)
 ```
 
 `containerSelector`: a query selector (similar to CSS selector) that specifies which elements will activate the avoidance effect when moused over or touched.
 
-`options`: \[optional\] a options object that specifies parameters for how the avoidance effect behaves. Defaults to `{}`. See the [options section](#options) below for what can be tweaked!
+`options` *\[optional\]*:  a options object that specifies parameters for how the avoidance effect behaves. Defaults to `{}`. See the [options section](#configuration-options) below for what can be tweaked!
 
-`addChildrenAsParticles`: \[optional\] a boolean that specifies whether or not the children of the specified containers will be automatically added as particles upon instantiation. Defaults to `true`.
+`addChildrenAsParticles` *\[optional\]*: a boolean that specifies whether or not the children of the specified containers will be automatically added as particles upon instantiation. Defaults to `true`.
 
 #### Other methods
 
 > TODO: Documentation for other methods will be added later.
 
-## Options
+## Configuration Options
 
-The `Avoidance` constructor takes in an options object as its second parameter. The options object has the following keys (and sub-keys...).
+The `Avoidance` constructor takes in an options object as its second parameter.
+
+### Example
+
+An example `AvoidanceUserOptions` object is given below.
+
+```js
+{
+  factorMethod: {
+    name: "power_inverse",
+    offset: 0.5,
+    power: 1.7,
+  },
+  displacementMethod: "proportional_threshold",
+  timing: "easeOutCubic",
+}
+```
+
+### Keys
+
+An `AvoidanceUserOptions` object can take any combination of the following *optional* keys and values.
 
 #### factorMethod
 
