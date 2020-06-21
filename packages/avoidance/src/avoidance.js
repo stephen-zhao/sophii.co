@@ -1,4 +1,4 @@
-// avoidance v0.1.1 candidate
+// avoidance v0.1.1
 // AUTHOR: Stephen Zhao
 // REPO: github.com/stephen-zhao/sophii.co
 
