@@ -5,7 +5,7 @@ This repo is a collection of javascript files to support the website [sophii.co]
 
 ## Quick Start
 
-The two easiest ways at the moment to use the scripts from this repo are
+The two easiest ways to use the scripts from this repo are
 
 1. to CDN directly to the distributable JS files, transpiled and ready to use directly in the browser; or
 2. to install to your project via a package manager such as npm or yarn.
@@ -61,11 +61,7 @@ Use the following code in your HTML to import the script via CDN, after jQuery i
 ## Roadmap
 
 - `avoidance.js`:
-  - support rotation animation
-  - add typedefs in typescript (especially for the API)
-  - needs API documentation
-  - needs features highlight in README
-  - needs publish to NPM
+  - See [TODO](packages/avoidance/README.md#-TODO)
 - `gallery-case-scroll.js`:
   - needs library-ification
   - needs documentation
