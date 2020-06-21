@@ -100,7 +100,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-// avoidance v0.1.1 candidate
+// avoidance v0.1.1
 // AUTHOR: Stephen Zhao
 // REPO: github.com/stephen-zhao/sophii.co
 // A standalone library for creating "avoidance cloud" effect.
@@ -481,8 +481,8 @@ var Avoidance = /*#__PURE__*/function () {
           particle.element.style.display = "";
         }
 
-        particle.element.style.left = particleNewPos.x;
-        particle.element.style.top = particleNewPos.y;
+        particle.element.style.left = particleNewPos.x + "px";
+        particle.element.style.top = particleNewPos.y + "px";
       }
     }
   }, {
@@ -724,8 +724,8 @@ Avoidance.animate = {
 
       var pos = pathing(distance); // Render
 
-      element.style.left = pos.x;
-      element.style.top = pos.y; // Update vars for next iteration
+      element.style.left = pos.x + "px";
+      element.style.top = pos.y + "px"; // Update vars for next iteration
 
       time = time + _this.FRAME_DURATION;
       distance = distanceFromTime(time);
