@@ -28,38 +28,10 @@ See the instructions below for each specific script and how to access the entry 
   </a>
 </p>
 <p align="center">
-  Latest Version: 0.1.1
+  <a href="https://badge.fury.io/js/%40zhaostephen%2Favoidance"><img src="https://badge.fury.io/js/%40zhaostephen%2Favoidance.svg" alt="npm version" height="18"></a>
 </p>
 
-#### For CDN:
-
-Paste the following into your HTML, either inside `<head>` or at the end of `<body>`.
-
-```html
-<script src="https://cdn.jsdelivr.net/npm/@zhaostephen/avoidance@0.1.1/dist/avoidance.var.min.js">
-```
-
-#### For Packaged:
-
-Run one of the following:
-```sh
-yarn add @zhaostephen/avoidance
-```
-```sh
-npm install --save @zhaostephen/avoidance
-```
-
-#### Usage:
-
-Add the following javascript.
-
-```js
-new Avoidance('#my-container').start();
-```
-
-Replace `#my-container` with the query selector for the container on which you want the mouse-over/touch effect to occur. All children elements will then be animated as particles.
-
-For more details on the what customizable options and functionality are available, see the [avoidance.js readme](packages/avoidance).
+For details about features, usage, and roadmap, see the [**avoidance.js** repo homepage](packages/avoidance).
 
 ### gallery-case-scroll.js
 
