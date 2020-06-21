@@ -1,0 +1,162 @@
+<html>
+  <head>
+    <script src="https://cdn.jsdelivr.net/npm/@zhaostephen/avoidance@0.1.1/dist/avoidance.var.min.js"></script>
+    <style>
+      .containers-grid-shell {
+        padding: 10px;
+      }
+
+      .containers-grid {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        margin: -10px;
+      }
+
+      .container-panel {
+        margin: 10px;
+      }
+
+      .particle-container {
+        position: relative;
+        width: 500px;
+        height: 500px;
+        border: 2px solid goldenrod;
+        background-color: black;
+        overflow: hidden;
+      }
+
+      .particle-container>div {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background-color: cornflowerblue;
+        border: 2px solid white;
+        box-shadow: 0px 0px 10px 1px yellow;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="containers-grid-shell">
+      <div class="containers-grid">
+        <div class="container-panel" data-key="0">
+          <input type="button" value="Add particle" class="add-particle-btn">
+          <input type="button" value="Remove particle" class="remove-particle-btn">
+          <span class="particle-count"></span>
+          <div class="particle-container">
+          </div>
+        </div>
+        <div class="container-panel" data-key="1">
+          <input type="button" value="Add particle" class="add-particle-btn">
+          <input type="button" value="Remove particle" class="remove-particle-btn">
+          <span class="particle-count"></span>
+          <div class="particle-container">
+          </div>
+        </div>
+        <div class="container-panel" data-key="2">
+          <input type="button" value="Add particle" class="add-particle-btn">
+          <input type="button" value="Remove particle" class="remove-particle-btn">
+          <span class="particle-count"></span>
+          <div class="particle-container">
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      var NUM_OF_CONTAINERS = 3;
+      (function() {
+
+        // HELPER FUNCTIONS
+
+        var addParticles = function(containerSelector, n) {
+          var particles = [];
+          var container = document.querySelector(containerSelector);
+          for (var i = 0; i < n; ++i) {
+            var particle = document.createElement("div");
+            particle.style.left = (container.offsetWidth * 0.1) + Math.random() * (container.offsetWidth * 0.8);
+            particle.style.top = (container.offsetHeight * 0.1) + Math.random() * (container.offsetHeight * 0.8);
+            container.appendChild(particle);
+            particles.push(particle);
+          }
+          return particles;
+        }
+
+        var removeParticle = function(containerSelector) {
+          var container = document.querySelector(containerSelector);
+          if (container.children.length === 0) {
+            return null;
+          }
+          var particle = container.children[0];
+          container.removeChild(particle);
+          return particle;
+        }
+
+        // INITIALIZE BUTTONS
+
+        document.querySelectorAll(".add-particle-btn").forEach(function(btn) {
+          btn.addEventListener("click", function() {
+            var key = parseInt(this.parentElement.getAttribute("data-key"));
+            var particles = addParticles(`.container-panel[data-key='${key}']>.particle-container`, 1);
+            avoidances[key].addParticleElement(particles[0]);
+            document.querySelector(`.container-panel[data-key='${key}']>.particle-count`).innerHTML = ++particleCounts[key];
+          });
+        });
+
+        document.querySelectorAll(".remove-particle-btn").forEach(function(btn) {
+          btn.addEventListener("click", function() {
+            var key = parseInt(this.parentElement.getAttribute("data-key"));
+            var particle = removeParticle(`.container-panel[data-key='${key}']>.particle-container`);
+            if (particle) {
+              avoidances[key].removeParticleElement(particle);
+              document.querySelector(`.container-panel[data-key='${key}']>.particle-count`).innerHTML = --particleCounts[key];
+            }
+          });
+        });
+
+        // INITIALIZE CONTAINERS
+
+        var initialParticleCounts = [
+          50, 50, 50
+        ]
+        var particleCounts = Array.from(initialParticleCounts)
+        for (var i = 0; i < NUM_OF_CONTAINERS; ++i) {
+          addParticles(`.container-panel[data-key='${i}']>.particle-container`, initialParticleCounts[i]);
+        }
+        document.querySelectorAll('.container-panel>.particle-count').forEach(function(counter, key) {
+          counter.innerHTML = particleCounts[key];
+        });
+
+        // INITIALIZE AVOIDANCE
+
+        var avoidanceOptions = [
+          {
+            factorMethod: {
+              scale: 0.7,
+            }
+          },
+          {
+            factorMethod: {
+              scale: 1.0,
+            }
+          },
+          {
+            factorMethod: {
+              scale: 2.5,
+            }
+          },
+        ];
+
+        var avoidances = [];
+
+        for (var containerIdx = 0; containerIdx < NUM_OF_CONTAINERS; ++containerIdx) {
+          var avoidance = new Avoidance(
+            `.container-panel[data-key='${containerIdx}']>.particle-container`,
+            avoidanceOptions[containerIdx]);
+          avoidance.start();
+          avoidances.push(avoidance);
+        }
+
+      })();
+    </script> 
+  </body>
+</html>
