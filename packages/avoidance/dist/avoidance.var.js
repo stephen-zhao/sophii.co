@@ -100,7 +100,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-// avoidance v0.1.0
+// avoidance v0.1.1 candidate
 // AUTHOR: Stephen Zhao
 // REPO: github.com/stephen-zhao/sophii.co
 // A standalone library for creating "avoidance cloud" effect.
@@ -118,11 +118,15 @@ var Avoidance = /*#__PURE__*/function () {
   //        scale: a number
   //        offset: a number
   //        power: a number
-  //      }
+  //      },
   //      displacementMethod: {
   //        name: one of "standard", "proportional_threshold", or "absolute_threshold"
   //        thresholdRadius: a number
-  //      }
+  //      },
+  //      timing: one of
+  //        "linear", "easeOutCubic", "easeOutExpo"
+  //      pathing: one of
+  //        "linear", "bezierQuad"
   //   addChildrenAsParticles
   //    - boolean which specifies whether or not the children
   //      of the containers are added initially as tracked
@@ -143,7 +147,9 @@ var Avoidance = /*#__PURE__*/function () {
     this.trackedParticleElementsSet = new Set(); // "fix" event listeners
 
     this.mouseMoveHandler = this.mouseMoveHandler.bind(this);
-    this.mouseClickTestHandler = this.mouseClickTestHandler.bind(this); // Create particles from all of the container's children
+    this.clickHandler = this.clickHandler.bind(this);
+    this.touchStartHandler = this.touchStartHandler.bind(this);
+    this.touchEndHandler = this.touchEndHandler.bind(this); // Create particles from all of the container's children
     // and add them to the list of tracked particles, if specified to do so
 
     if (addChildrenAsParticles) {
@@ -226,6 +232,20 @@ var Avoidance = /*#__PURE__*/function () {
           options.displacementMethod.name = undefined;
           options.displacementMethod.thresholdRadius = undefined;
         }
+      } // Process timings
+
+
+      if ("timing" in userOptions && typeof userOptions.timing === "string" && userOptions.timing in Avoidance.animate.timings) {
+        options.timing = Avoidance.animate.timings[userOptions.timing];
+      } else {
+        options.timing = Avoidance.animate.timings.easeOutExpo;
+      } // Process pathing
+
+
+      if ("pathing" in userOptions && typeof userOptions.pathing === "string" && userOptions.pathing in Avoidance.animate.paths) {
+        options.pathing = userOptions.pathing;
+      } else {
+        options.pathing = "bezierQuad";
       }
 
       return options;
@@ -371,71 +391,122 @@ var Avoidance = /*#__PURE__*/function () {
   }, {
     key: "registerEventHandlers",
     value: function registerEventHandlers(container) {
+      container.addEventListener("touchend", this.touchEndHandler);
+      container.addEventListener("touchstart", this.touchStartHandler);
       container.addEventListener("mousemove", this.mouseMoveHandler);
-      container.addEventListener("click", this.mouseClickTestHandler);
+      container.addEventListener("click", this.clickHandler);
     }
   }, {
     key: "deregisterEventHandlers",
     value: function deregisterEventHandlers(container) {
-      container.removeEventListener("click", this.mouseClickTestHandler);
+      container.removeEventListener("click", this.clickHandler);
       container.removeEventListener("mousemove", this.mouseMoveHandler);
+      container.removeEventListener("touchstart", this.touchStartHandler);
+      container.removeEventListener("touchend", this.touchEndHandler);
     }
   }, {
     key: "mouseMoveHandler",
     value: function mouseMoveHandler(event) {
-      var container = event.currentTarget;
+      if (this.touchStarted || this.touchEnded) {
+        // Do not handle a mouseMove for touch events
+        event.preventDefault();
+      } else {
+        var container = event.currentTarget;
+        var mousePos = {
+          x: event.pageX - container.offsetLeft,
+          y: event.pageY - container.offsetTop
+        };
+        this.computeAvoidance(container, mousePos, this.renderImmediateAvoidance.bind(this));
+      }
+    }
+  }, {
+    key: "clickHandler",
+    value: function clickHandler(event) {
+      if (this.touchStarted || this.touchEnded) {
+        var container = event.currentTarget;
+        var touchPos = {
+          x: event.pageX - container.offsetLeft,
+          y: event.pageY - container.offsetTop
+        };
+        this.computeAvoidance(container, touchPos, this.renderAnimatedAvoidance.bind(this));
+        this.touchStarted = false;
+        this.touchEnded = false;
+      } else {// click, but not touched
+      }
+    }
+  }, {
+    key: "touchStartHandler",
+    value: function touchStartHandler(event) {
+      this.touchStarted = true;
+    }
+  }, {
+    key: "touchEndHandler",
+    value: function touchEndHandler(event) {
+      this.touchEnded = true;
+    }
+  }, {
+    key: "computeAvoidance",
+    value: function computeAvoidance(container, userPos, renderCallback) {
       var containerSizeScalar = Avoidance.geometry.getRadius({
         x: container.offsetWidth,
         y: container.offsetHeight
-      }); // Determine the relative x and y of mouse position inside the container
-
-      var mousePos = {
-        x: event.pageX - container.offsetLeft,
-        y: event.pageY - container.offsetTop
-      };
+      });
       this.trackedParticles.forEach(function (particle) {
         var particleSize = {
           width: particle.element.offsetWidth,
           height: particle.element.offsetHeight
         };
-        var particleOrigPosToCentreRelMouse = {
-          x: particle.originalPos.x + particleSize.width * 1.0 / 2 - mousePos.x,
-          y: particle.originalPos.y + particleSize.height * 1.0 / 2 - mousePos.y
+        var particleOrigPosToCentreRelUser = {
+          x: particle.originalPos.x + particleSize.width * 1.0 / 2 - userPos.x,
+          y: particle.originalPos.y + particleSize.height * 1.0 / 2 - userPos.y
         };
-        var particleOrigDistToCentreRelMouse = Avoidance.geometry.getRadius(particleOrigPosToCentreRelMouse);
-        var avoidanceFactor = this.calculateAvoidanceFactor(particleOrigDistToCentreRelMouse, particleSize, containerSizeScalar);
-
-        if (avoidanceFactor === NaN) {
-          particle.element.style.display = "none";
-        } else {
-          var avoidanceDisplacement = this.calculateAvoidanceDisplacement(particleOrigPosToCentreRelMouse, avoidanceFactor);
-          var particleNewPos = {
-            x: particle.originalPos.x + avoidanceDisplacement.x,
-            y: particle.originalPos.y + avoidanceDisplacement.y
-          };
-
-          if (particle.element.style.display === "none") {
-            particle.element.style.display = "";
-          }
-
-          particle.element.style.left = particleNewPos.x;
-          particle.element.style.top = particleNewPos.y;
-        }
+        var particleOrigDistToCentreRelUser = Avoidance.geometry.getRadius(particleOrigPosToCentreRelUser);
+        var avoidanceFactor = this.calculateAvoidanceFactor(particleOrigDistToCentreRelUser, particleSize, containerSizeScalar);
+        var avoidanceDisplacement = this.calculateAvoidanceDisplacement(particleOrigPosToCentreRelUser, avoidanceFactor);
+        renderCallback(avoidanceDisplacement, particle);
       }, this);
     }
   }, {
-    key: "mouseClickTestHandler",
-    value: function mouseClickTestHandler(event) {
-      var datastring = this.trackedParticles.map(function (particle, idx) {
-        var particleString = "";
-        var id = particle.element.getAttribute("id");
-        particleString += "particle ".concat(id !== null ? id : idx, "\n");
-        particleString += "original x = ".concat(particle.originalPos.x, "\n");
-        particleString += "original y = ".concat(particle.originalPos.y, "\n");
-        particleString += "-------------------\n";
-        return particleString;
-      }).join("");
-      alert(datastring);
+    key: "renderImmediateAvoidance",
+    value: function renderImmediateAvoidance(avoidanceDisplacement, particle) {
+      if (avoidanceDisplacement === null) {
+        particle.element.style.display = "none";
+      } else {
+        var particleNewPos = {
+          x: particle.originalPos.x + avoidanceDisplacement.x,
+          y: particle.originalPos.y + avoidanceDisplacement.y
+        };
+
+        if (particle.element.style.display === "none") {
+          particle.element.style.display = "";
+        }
+
+        particle.element.style.left = particleNewPos.x;
+        particle.element.style.top = particleNewPos.y;
+      }
+    }
+  }, {
+    key: "renderAnimatedAvoidance",
+    value: function renderAnimatedAvoidance(avoidanceDisplacement, particle) {
+      if (avoidanceDisplacement === null) {
+        particle.element.style.display = "none";
+      } else {
+        var particleOldPos = {
+          x: particle.element.offsetLeft,
+          y: particle.element.offsetTop
+        };
+        var particleNewPos = {
+          x: particle.originalPos.x + avoidanceDisplacement.x,
+          y: particle.originalPos.y + avoidanceDisplacement.y
+        };
+
+        if (particle.element.style.display === "none") {
+          particle.element.style.display = "";
+        }
+
+        var pathing = this.options.pathing === "bezierQuad" ? Avoidance.animate.paths.bezierQuad(particleOldPos, particle.originalPos, particleNewPos) : Avoidance.animate.paths.linear(particleOldPos, particleNewPos);
+        Avoidance.animate.move(particle.element, pathing, 1000, this.options.timing);
+      }
     }
   }, {
     key: "calculateAvoidanceFactor",
@@ -526,6 +597,10 @@ Avoidance.calculateAvoidanceDisplacement = {
     absolute_threshold: function absolute_threshold() {
       var param_threshold_radius = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 80.0;
       return function (particleOrigPosRelMouse, avoidanceFactor) {
+        if (avoidanceFactor === NaN) {
+          return null;
+        }
+
         var offset = {
           x: particleOrigPosRelMouse.x * avoidanceFactor,
           y: particleOrigPosRelMouse.y * avoidanceFactor
@@ -546,6 +621,10 @@ Avoidance.calculateAvoidanceDisplacement = {
     proportional_threshold: function proportional_threshold() {
       var param_threshold_radius = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 20.0;
       return function (particleOrigPosRelMouse, avoidanceFactor) {
+        if (avoidanceFactor === NaN) {
+          return null;
+        }
+
         var offset = {
           x: particleOrigPosRelMouse.x * avoidanceFactor,
           y: particleOrigPosRelMouse.y * avoidanceFactor
@@ -564,6 +643,10 @@ Avoidance.calculateAvoidanceDisplacement = {
     standard: function standard() {
       var param_threshold_radius = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
       return function (particleOrigPosRelMouse, avoidanceFactor) {
+        if (avoidanceFactor === NaN) {
+          return null;
+        }
+
         return {
           x: particleOrigPosRelMouse.x * avoidanceFactor,
           y: particleOrigPosRelMouse.y * avoidanceFactor
@@ -587,6 +670,66 @@ Avoidance.dom = {
       x: element.offsetLeft + element.offsetWidth / 2 - (relativeTo ? relativeTo.offsetLeft : 0),
       y: element.offsetTop + element.offsetHeight / 2 - (relativeTo ? relativeTo.offsetTop : 0)
     };
+  }
+};
+Avoidance.animate = {
+  FRAME_DURATION: 10.0,
+  timings: {
+    linear: function linear(duration) {
+      return function (t) {
+        return t / duration;
+      };
+    },
+    easeOutCubic: function easeOutCubic(duration) {
+      return function (t) {
+        return 1 + Math.pow(t / duration - 1, 3);
+      };
+    },
+    easeOutExpo: function easeOutExpo(duration) {
+      return function (t) {
+        return 1 - Math.pow(2, -10 * t / duration);
+      };
+    }
+  },
+  paths: {
+    linear: function linear(p0, p1) {
+      return function (s) {
+        return {
+          x: p0.x + s * (p1.x - p0.x),
+          y: p0.y + s * (p1.y - p0.y)
+        };
+      };
+    },
+    bezierQuad: function bezierQuad(p0, p1, p2) {
+      return function (s) {
+        return {
+          x: p1.x + (1.0 - s) * (1.0 - s) * (p0.x - p1.x) + s * s * (p2.x - p1.x),
+          y: p1.y + (1.0 - s) * (1.0 - s) * (p0.y - p1.y) + s * s * (p2.y - p1.y)
+        };
+      }; // 0 <= s <= 1
+    }
+  },
+  move: function move(element, pathing, duration, timing) {
+    var _this = this;
+
+    var time = 0;
+    var distance = 0;
+    var distanceFromTime = timing(duration);
+    var animation = setInterval(function () {
+      // Check for final condition
+      if (time >= duration) {
+        clearInterval(animation);
+      } // Calculate position
+
+
+      var pos = pathing(distance); // Render
+
+      element.style.left = pos.x;
+      element.style.top = pos.y; // Update vars for next iteration
+
+      time = time + _this.FRAME_DURATION;
+      distance = distanceFromTime(time);
+    }, this.FRAME_DURATION);
   }
 };
 
