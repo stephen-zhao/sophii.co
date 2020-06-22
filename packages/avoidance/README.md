@@ -86,11 +86,11 @@ An example `AvoidanceUserOptions` object is given below.
 ```js
 {
   factorMethod: {
-    name: "power_inverse",
-    offset: 0.5,
-    power: 1.7,
+    name: "powerInverse",
+    offset: 0.05,
+    power: 0.8,
   },
-  displacementMethod: "proportional_threshold",
+  displacementMethod: "noThreshold",
   timing: "easeOutCubic",
 }
 ```
@@ -105,9 +105,9 @@ An `AvoidanceUserOptions` object can take any combination of the following *opti
 
 It can be either a string or an object.
 
-- If a string, it can be one of `"inverse"`, `"power_inverse"`, or `"exponential"`.
+- If a string, it can be one of `"inverse"`, `"powerInverse"`, or `"exponential"`.
 - If an object, it can contain any combination of the following keys and values:
-  - `name`: one of `"inverse"`, `"power_inverse"`, or `"exponential"`.
+  - `name`: one of `"inverse"`, `"powerInverse"`, or `"exponential"`.
   - `scale`: a floating-point number.
   - `offset`: a floating-point number.
   - `power`: a floating-point number.
@@ -116,10 +116,10 @@ The default behaviour is
 
 ```js
 {
-  name: "power_inverse",
-  scale: 1.0,
+  name: "powerInverse",
+  scale: 0.02,
   offset: 0.0,
-  power: 1.6,
+  power: 0.6,
 }
 ```
 
@@ -133,17 +133,17 @@ If only a name is provided, the default value for the remaining keys will adjust
 
 It can be either a string or an object.
 
-- If a string, it can be one of `"standard"`, `"proportional_threshold"`, or `"absolute_threshold"`.
+- If a string, it can be one of `"noThreshold"`, or `"threshold"`.
 - If an object, it can contain any combination of the following keys and values:
-  - `name`: one of `"standard"`, `"proportional_threshold"`, or `"absolute_threshold"`.
+  - `name`: one of `"noThreshold"`, or `"threshold"`.
   - `thresholdRadius`: a floating-point number
 
 The default behaviour is
 
 ```js
 {
-  name: "absolute_threshold",
-  thresholdRadius: 80.0,
+  name: "threshold",
+  thresholdRadius: 0.1,
 }
 ```
 
