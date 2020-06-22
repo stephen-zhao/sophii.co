@@ -37,7 +37,7 @@ const createConfig = function(options) {
     module: {
       rules: [
         {
-          test: /\.js$/,
+          test: /\.[mc]?js$/,
           exclude: /(node_modules|bower_components)/,
           use: {
             loader: 'babel-loader',
