@@ -1,7 +1,7 @@
 # avoidance.js
 
 <p align="center">
-  <a href="https://github.com/stephen-zhao/sophii.co/master/packages/avoidance"><img alt="avoidance.js logo" src="https://raw.githubusercontent.com/stephen-zhao/sophii.co/master/packages/avoidance/branding/avoidancejs_logo.png"/></a>
+  <a href="https://github.com/stephen-zhao/sophii.co/tree/master/packages/avoidance"><img alt="avoidance.js logo" src="https://raw.githubusercontent.com/stephen-zhao/sophii.co/master/packages/avoidance/branding/avoidancejs_logo.png"/></a>
 </p>
 <p align="center">
     Make HTML elements avoid your mouse cursor and touches, beautifully.
@@ -25,7 +25,7 @@ The two easiest ways to use **avoidance.js** are
 Paste the following into your HTML, either inside `<head>` or at the end of `<body>`, before any javascript that makes use of it.
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@zhaostephen/avoidance@0.1.1/dist/avoidance.var.min.js">
+<script src="https://cdn.jsdelivr.net/npm/@zhaostephen/avoidance@0.2.1/dist/avoidance.var.min.js">
 ```
 
 ### To install to node project:

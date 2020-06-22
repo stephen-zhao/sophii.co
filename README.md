@@ -1,6 +1,6 @@
 # sophii.co working files
 
-This repo is a collection of javascript files to support the website [sophii.co](https://sophii.co). There are scripts for ["avoidance cloud" effect](https://github.com/stephen-zhao/sophii.co/master/packages/avoidance) and for creating a scrollwheel side-scrolling page.
+This repo is a collection of javascript files to support the website [sophii.co](https://sophii.co). There are scripts for ["avoidance cloud" effect](https://github.com/stephen-zhao/sophii.co/tree/master/packages/avoidance) and for creating a scrollwheel side-scrolling page.
 
 
 ## Quick Start
@@ -15,7 +15,7 @@ See the instructions below for each specific script and how to access the entry 
 ### avoidance.js
 
 <p align="center">
-  <a href="https://github.com/stephen-zhao/sophii.co/master/packages/avoidance"><img alt="avoidance.js logo" src="https://raw.githubusercontent.com/stephen-zhao/sophii.co/master/packages/avoidance/branding/avoidancejs_logo.png"/></a>
+  <a href="https://github.com/stephen-zhao/sophii.co/tree/master/packages/avoidance"><img alt="avoidance.js logo" src="https://raw.githubusercontent.com/stephen-zhao/sophii.co/master/packages/avoidance/branding/avoidancejs_logo.png"/></a>
 </p>
 <p align="center">
     Make HTML elements avoid your mouse cursor and touches, beautifully.
@@ -27,7 +27,7 @@ See the instructions below for each specific script and how to access the entry 
   <a href="https://badge.fury.io/js/%40zhaostephen%2Favoidance"><img src="https://badge.fury.io/js/%40zhaostephen%2Favoidance.svg" alt="npm version" height="18"></a>
 </p>
 
-For details about features, usage, and roadmap, see the [**avoidance.js** repo homepage](https://github.com/stephen-zhao/sophii.co/master/packages/avoidance).
+For details about features, usage, and roadmap, see the [**avoidance.js** repo homepage](https://github.com/stephen-zhao/sophii.co/tree/master/packages/avoidance).
 
 ### gallery-case-scroll.js
 
@@ -44,7 +44,7 @@ Use the following code in your HTML to import the script via CDN, after jQuery i
 ## Roadmap
 
 - `avoidance.js`:
-  - See [TODO](https://github.com/stephen-zhao/sophii.co/master/packages/avoidance#todo)
+  - See [TODO](https://github.com/stephen-zhao/sophii.co/tree/master/packages/avoidance#todo)
 - `gallery-case-scroll.js`:
   - needs library-ification
   - needs documentation
