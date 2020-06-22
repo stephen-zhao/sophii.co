@@ -1,11 +1,9 @@
 {
   "name": "@zhaostephen/avoidance",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A standalone library for creating avoidance-cloud particle effects, beautifully.",
-  "type": "module",
+  "main": "dist/avoidance.var.min.js",
   "module": "src/avoidance.js",
-  "main": "src/avoidance.js",
-  "exports": "src/avoidance.js",
   "browser": "dist/avoidance.var.min.js",
   "repository": "https://github.com/stephen-zhao/sophii.co",
   "author": "Stephen Zhao",
@@ -23,8 +21,8 @@
     "webpack-cli": "^3.3.12"
   },
   "scripts": {
-    "start": "parallel-webpack --watch -- --mode=development",
-    "build": "parallel-webpack -- --mode=production",
+    "build-watch": "parallel-webpack --watch -- --mode=development",
+    "build-prod": "parallel-webpack -- --mode=production",
     "check-types": "tsc"
   }
 }

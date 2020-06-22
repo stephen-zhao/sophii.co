@@ -32,7 +32,7 @@ const createConfig = function(options) {
       libraryTarget: options.libraryTarget,
     },
     resolve: {
-      extensions: ['.js']
+      extensions: ['.js', '.cjs']
     },
     module: {
       rules: [
