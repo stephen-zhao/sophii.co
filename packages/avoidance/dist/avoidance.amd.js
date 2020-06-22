@@ -99,7 +99,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-// avoidance v0.1.1 candidate
+// avoidance.js
 // AUTHOR: Stephen Zhao
 // REPO: github.com/stephen-zhao/sophii.co
 // A standalone library for creating "avoidance cloud" effect.
@@ -113,13 +113,13 @@ var Avoidance = /*#__PURE__*/function () {
   //   options
   //    - an settings object that takes the following *optional* key/values:
   //      factorMethod: {
-  //        name: one of "inverse", "power_inverse", or "exponential"
+  //        name: one of "inverse", "powerInverse", or "exponential"
   //        scale: a number
   //        offset: a number
   //        power: a number
   //      },
   //      displacementMethod: {
-  //        name: one of "standard", "proportional_threshold", or "absolute_threshold"
+  //        name: one of "noThreshold" or "threshold"
   //        thresholdRadius: a number
   //      },
   //      timing: one of
@@ -154,7 +154,7 @@ var Avoidance = /*#__PURE__*/function () {
     if (addChildrenAsParticles) {
       this.containers.forEach(function (container) {
         for (var i = 0; i < container.children.length; ++i) {
-          this.startTrackingParticleElement(container.children[i]);
+          this.startTrackingParticleElement(container.children[i], container);
         }
       }, this);
     } // set the initial status
@@ -251,13 +251,17 @@ var Avoidance = /*#__PURE__*/function () {
     }
   }, {
     key: "addParticles",
-    value: function addParticles(particleSelector) {
-      document.querySelectorAll(particleSelector).forEach(this.startTrackingParticleElement, this);
+    value: function addParticles(particleSelector, containerSelector) {
+      var _this = this;
+
+      document.querySelectorAll(particleSelector).forEach(function (particleElement) {
+        _this.startTrackingParticleElement(particleElement, containerSelector ? document.querySelector(containerSelector) : undefined);
+      }, this);
     }
   }, {
     key: "addParticleElement",
-    value: function addParticleElement(particleElement) {
-      this.startTrackingParticleElement(particleElement);
+    value: function addParticleElement(particleElement, containerElement) {
+      this.startTrackingParticleElement(particleElement, containerElement);
     }
   }, {
     key: "removeParticles",
@@ -271,9 +275,13 @@ var Avoidance = /*#__PURE__*/function () {
     }
   }, {
     key: "startTrackingParticleElement",
-    value: function startTrackingParticleElement(particleElement) {
+    value: function startTrackingParticleElement(particleElement, containerElement) {
       if (!this.trackedParticleElementsSet.has(particleElement)) {
-        var particle = new Avoidance.Particle(particleElement);
+        if (!containerElement) {
+          containerElement = document.body;
+        }
+
+        var particle = new Avoidance.Particle(particleElement, containerElement);
         this.trackedParticles.push(particle);
         this.trackedParticleElementsSet.add(particleElement);
       }
@@ -446,22 +454,20 @@ var Avoidance = /*#__PURE__*/function () {
   }, {
     key: "computeAvoidance",
     value: function computeAvoidance(container, userPos, renderCallback) {
-      var containerSizeScalar = Avoidance.geometry.getRadius({
-        x: container.offsetWidth,
-        y: container.offsetHeight
-      });
+      var containerRect = container.getBoundingClientRect();
+      var userPosRatio = {
+        x: userPos.x / containerRect.width,
+        y: userPos.y / containerRect.height
+      };
       this.trackedParticles.forEach(function (particle) {
-        var particleSize = {
-          width: particle.element.offsetWidth,
-          height: particle.element.offsetHeight
+        var particleSizeRatio = particle.getSizeRatio();
+        var particleCentreOrigPosRatioRelUser = {
+          x: particle.originalPosRatio.x + particleSizeRatio.width * 1.0 / 2 - userPosRatio.x,
+          y: particle.originalPosRatio.y + particleSizeRatio.height * 1.0 / 2 - userPosRatio.y
         };
-        var particleOrigPosToCentreRelUser = {
-          x: particle.originalPos.x + particleSize.width * 1.0 / 2 - userPos.x,
-          y: particle.originalPos.y + particleSize.height * 1.0 / 2 - userPos.y
-        };
-        var particleOrigDistToCentreRelUser = Avoidance.geometry.getRadius(particleOrigPosToCentreRelUser);
-        var avoidanceFactor = this.calculateAvoidanceFactor(particleOrigDistToCentreRelUser, particleSize, containerSizeScalar);
-        var avoidanceDisplacement = this.calculateAvoidanceDisplacement(particleOrigPosToCentreRelUser, avoidanceFactor);
+        var particleCentreOrigDistRelUser = Avoidance.geometry.getRadius(particleCentreOrigPosRatioRelUser);
+        var avoidanceFactor = this.calculateAvoidanceFactor(particleCentreOrigDistRelUser, particleSizeRatio);
+        var avoidanceDisplacement = this.calculateAvoidanceDisplacement(Avoidance.geometry.getUnitVector(particleCentreOrigPosRatioRelUser), avoidanceFactor);
         renderCallback(avoidanceDisplacement, particle);
       }, this);
     }
@@ -472,16 +478,16 @@ var Avoidance = /*#__PURE__*/function () {
         particle.element.style.display = "none";
       } else {
         var particleNewPos = {
-          x: particle.originalPos.x + avoidanceDisplacement.x,
-          y: particle.originalPos.y + avoidanceDisplacement.y
+          x: particle.originalPosRatio.x + avoidanceDisplacement.x,
+          y: particle.originalPosRatio.y + avoidanceDisplacement.y
         };
 
         if (particle.element.style.display === "none") {
           particle.element.style.display = "";
         }
 
-        particle.element.style.left = particleNewPos.x;
-        particle.element.style.top = particleNewPos.y;
+        particle.element.style.left = Avoidance.math.toPctStr(particleNewPos.x);
+        particle.element.style.top = Avoidance.math.toPctStr(particleNewPos.y);
       }
     }
   }, {
@@ -490,26 +496,23 @@ var Avoidance = /*#__PURE__*/function () {
       if (avoidanceDisplacement === null) {
         particle.element.style.display = "none";
       } else {
-        var particleOldPos = {
-          x: particle.element.offsetLeft,
-          y: particle.element.offsetTop
-        };
-        var particleNewPos = {
-          x: particle.originalPos.x + avoidanceDisplacement.x,
-          y: particle.originalPos.y + avoidanceDisplacement.y
+        var particleOldPosRatio = particle.getPosRatio();
+        var particleNewPosRatio = {
+          x: particle.originalPosRatio.x + avoidanceDisplacement.x,
+          y: particle.originalPosRatio.y + avoidanceDisplacement.y
         };
 
         if (particle.element.style.display === "none") {
           particle.element.style.display = "";
         }
 
-        var pathing = this.options.pathing === "bezierQuad" ? Avoidance.animate.paths.bezierQuad(particleOldPos, particle.originalPos, particleNewPos) : Avoidance.animate.paths.linear(particleOldPos, particleNewPos);
+        var pathing = this.options.pathing === "bezierQuad" ? Avoidance.animate.paths.bezierQuad(particleOldPosRatio, particle.originalPosRatio, particleNewPosRatio) : Avoidance.animate.paths.linear(particleOldPosRatio, particleNewPosRatio);
         Avoidance.animate.move(particle.element, pathing, 1000, this.options.timing);
       }
     }
   }, {
     key: "calculateAvoidanceFactor",
-    value: function calculateAvoidanceFactor(originalDistance, elementSize, containerSizeScalar, method) {
+    value: function calculateAvoidanceFactor(originalDistance, elementSize, method) {
       if (method === undefined) {
         method = this.options.factorMethod.name;
       }
@@ -519,10 +522,10 @@ var Avoidance = /*#__PURE__*/function () {
       if (method !== undefined) {
         methodFn = Avoidance.calculateAvoidanceFactor.builtinMethods[method];
       } else {
-        methodFn = Avoidance.calculateAvoidanceFactor.builtinMethods.power_inverse;
+        methodFn = Avoidance.calculateAvoidanceFactor.builtinMethods.powerInverse;
       }
 
-      return methodFn(this.options.factorMethod.scale, this.options.factorMethod.offset, this.options.factorMethod.power)(originalDistance, elementSize, containerSizeScalar);
+      return methodFn(this.options.factorMethod.scale, this.options.factorMethod.offset, this.options.factorMethod.power)(originalDistance, elementSize);
     }
   }, {
     key: "calculateAvoidanceDisplacement",
@@ -536,7 +539,7 @@ var Avoidance = /*#__PURE__*/function () {
       if (method !== undefined) {
         methodFn = Avoidance.calculateAvoidanceDisplacement.builtinMethods[method];
       } else {
-        methodFn = Avoidance.calculateAvoidanceDisplacement.builtinMethods.absolute_threshold;
+        methodFn = Avoidance.calculateAvoidanceDisplacement.builtinMethods.threshold;
       }
 
       return methodFn(this.options.displacementMethod.thresholdRadius)(particleOrigPosRelMouse, avoidanceFactor);
@@ -553,39 +556,46 @@ Avoidance.geometry = {
   },
   getRadius: function getRadius(point) {
     return Math.sqrt(point.x * point.x + point.y * point.y);
+  },
+  getUnitVector: function getUnitVector(point) {
+    var radius = Avoidance.geometry.getRadius(point);
+    return {
+      x: point.x / radius,
+      y: point.y / radius
+    };
   }
 };
 Avoidance.calculateAvoidanceFactor = {
   builtinMethods: {
     inverse: function inverse() {
-      var param_scale = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0.1;
+      var param_scale = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0.02;
       var param_offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0.0;
       var param_power = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : undefined;
-      return function (originalDistance, elementSize, containerSizeScalar) {
+      return function (originalDistance, elementSize) {
         if (originalDistance === 0) {
           return NaN;
         } else {
-          return containerSizeScalar * param_scale * 1.0 / originalDistance + param_offset;
+          return param_scale * 1.0 / originalDistance + param_offset;
         }
       };
     },
     exponential: function exponential() {
-      var param_scale = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0.01;
-      var param_offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0.25;
+      var param_scale = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0.1;
+      var param_offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0.0;
       var param_power = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : undefined;
-      return function (originalDistance, elementSize, containerSizeScalar) {
-        return Math.exp(param_scale - originalDistance * 1.0 / containerSizeScalar) + param_offset;
+      return function (originalDistance, elementSize) {
+        return Math.exp(param_scale - originalDistance) + param_offset;
       };
     },
-    power_inverse: function power_inverse() {
-      var param_scale = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1.0;
+    powerInverse: function powerInverse() {
+      var param_scale = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0.02;
       var param_offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0.0;
-      var param_power = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1.6;
-      return function (originalDistance, elementSize, containerSizeScalar) {
+      var param_power = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0.6;
+      return function (originalDistance, elementSize) {
         if (originalDistance === 0) {
           return NaN;
         } else {
-          return containerSizeScalar * param_scale * 1.0 / Math.pow(originalDistance * 1.0, param_power) + param_offset;
+          return param_scale * 1.0 / Math.pow(originalDistance * 1.0, param_power) + param_offset;
         }
       };
     }
@@ -593,82 +603,46 @@ Avoidance.calculateAvoidanceFactor = {
 };
 Avoidance.calculateAvoidanceDisplacement = {
   builtinMethods: {
-    absolute_threshold: function absolute_threshold() {
-      var param_threshold_radius = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 80.0;
-      return function (particleOrigPosRelMouse, avoidanceFactor) {
+    threshold: function threshold() {
+      var param_threshold_radius = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0.1;
+      return function (directionUnitVector, avoidanceFactor) {
         if (avoidanceFactor === NaN) {
           return null;
         }
 
         var offset = {
-          x: particleOrigPosRelMouse.x * avoidanceFactor,
-          y: particleOrigPosRelMouse.y * avoidanceFactor
+          x: directionUnitVector.x * avoidanceFactor,
+          y: directionUnitVector.y * avoidanceFactor
         };
 
         if (Avoidance.geometry.getRadius(offset) > param_threshold_radius) {
-          var origRadius = Avoidance.geometry.getRadius(particleOrigPosRelMouse);
-          var scaleFactor = param_threshold_radius / origRadius;
           return {
-            x: particleOrigPosRelMouse.x * scaleFactor,
-            y: particleOrigPosRelMouse.y * scaleFactor
+            x: directionUnitVector.x * param_threshold_radius,
+            y: directionUnitVector.y * param_threshold_radius
           };
         } else {
           return offset;
         }
       };
     },
-    proportional_threshold: function proportional_threshold() {
-      var param_threshold_radius = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 20.0;
-      return function (particleOrigPosRelMouse, avoidanceFactor) {
-        if (avoidanceFactor === NaN) {
-          return null;
-        }
-
-        var offset = {
-          x: particleOrigPosRelMouse.x * avoidanceFactor,
-          y: particleOrigPosRelMouse.y * avoidanceFactor
-        };
-
-        if (avoidanceFactor > param_threshold_radius) {
-          return {
-            x: particleOrigPosRelMouse.x * param_threshold_radius,
-            y: particleOrigPosRelMouse.y * param_threshold_radius
-          };
-        } else {
-          return offset;
-        }
-      };
-    },
-    standard: function standard() {
+    noThreshold: function noThreshold() {
       var param_threshold_radius = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : undefined;
-      return function (particleOrigPosRelMouse, avoidanceFactor) {
+      return function (directionUnitVector, avoidanceFactor) {
         if (avoidanceFactor === NaN) {
           return null;
         }
 
         return {
-          x: particleOrigPosRelMouse.x * avoidanceFactor,
-          y: particleOrigPosRelMouse.y * avoidanceFactor
+          x: directionUnitVector.x * avoidanceFactor,
+          y: directionUnitVector.y * avoidanceFactor
         };
       };
     }
   }
 };
-Avoidance.dom = {
-  pageOffset: function pageOffset(element) {
-    var rect = element.getBoundingClientRect();
-    var scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-    var scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    return {
-      x: rect.left + scrollLeft,
-      y: rect.top + scrollTop
-    };
-  },
-  getCentre: function getCentre(element, relativeTo) {
-    return {
-      x: element.offsetLeft + element.offsetWidth / 2 - (relativeTo ? relativeTo.offsetLeft : 0),
-      y: element.offsetTop + element.offsetHeight / 2 - (relativeTo ? relativeTo.offsetTop : 0)
-    };
+Avoidance.math = {
+  toPctStr: function toPctStr(x) {
+    return 100.0 * x + "%";
   }
 };
 Avoidance.animate = {
@@ -709,7 +683,7 @@ Avoidance.animate = {
     }
   },
   move: function move(element, pathing, duration, timing) {
-    var _this = this;
+    var _this2 = this;
 
     var time = 0;
     var distance = 0;
@@ -723,27 +697,48 @@ Avoidance.animate = {
 
       var pos = pathing(distance); // Render
 
-      element.style.left = pos.x;
-      element.style.top = pos.y; // Update vars for next iteration
+      element.style.left = Avoidance.math.toPctStr(pos.x);
+      element.style.top = Avoidance.math.toPctStr(pos.y); // Update vars for next iteration
 
-      time = time + _this.FRAME_DURATION;
+      time = time + _this2.FRAME_DURATION;
       distance = distanceFromTime(time);
     }, this.FRAME_DURATION);
   }
 };
 
 Avoidance.Particle = /*#__PURE__*/function () {
-  function _class(element) {
+  function _class(element, container) {
     _classCallCheck(this, _class);
 
+    // Save both elements
     this.element = element;
-    this.originalPos = {
-      x: element.offsetLeft,
-      y: element.offsetTop
-    };
+    this.container = container;
+    this.originalPosRatio = this.getPosRatio();
   }
 
   _createClass(_class, [{
+    key: "getPosRatio",
+    value: function getPosRatio() {
+      // Get position as percentage of container to get built-in responsiveness!
+      var elementRect = this.element.getBoundingClientRect();
+      var containerRect = this.container.getBoundingClientRect();
+      return {
+        x: (elementRect.left - containerRect.left) / containerRect.width,
+        y: (elementRect.top - containerRect.top) / containerRect.height
+      };
+    }
+  }, {
+    key: "getSizeRatio",
+    value: function getSizeRatio() {
+      // Get size as percentage of container to get built-in responsiveness!
+      var elementRect = this.element.getBoundingClientRect();
+      var containerRect = this.container.getBoundingClientRect();
+      return {
+        width: elementRect.width / containerRect.width,
+        height: elementRect.height / containerRect.height
+      };
+    }
+  }, {
     key: "dispose",
     value: function dispose() {// TODO: return particle to original location, either by setting style or removing location style
     }

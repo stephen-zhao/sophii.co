@@ -8,8 +8,7 @@
 
       .containers-grid {
         display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
+        flex-direction: column;
         margin: -10px;
       }
 
@@ -19,7 +18,7 @@
 
       .particle-container {
         position: relative;
-        width: 500px;
+        width: auto;
         height: 500px;
         border: 2px solid goldenrod;
         background-color: black;
@@ -80,8 +79,8 @@
           var container = document.querySelector(containerSelector);
           for (var i = 0; i < n; ++i) {
             var particle = document.createElement("div");
-            particle.style.left = (container.offsetWidth * 0.1) + Math.random() * (container.offsetWidth * 0.8);
-            particle.style.top = (container.offsetHeight * 0.1) + Math.random() * (container.offsetHeight * 0.8);
+            particle.style.left = (10.0 + Math.random() * 80.0)+"%";
+            particle.style.top = (10.0 + Math.random() * 80.0)+"%";
             container.appendChild(particle);
             particles.push(particle);
           }
@@ -138,28 +137,34 @@
         var avoidanceOptions = [
           {
             factorMethod: {
-              scale: 0.005,
-            }
-          },
-          {
-            factorMethod: {
-              scale: 0.02,
-            }
-          },
-          {
-            factorMethod: {
-              scale: 0.05,
+              name: "exponential", scale: undefined, offset: undefined, power: undefined,
             },
             displacementMethod: {
-              thresholdRadius: 0.2
+              name: "threshold", thresholdRadius: 0.1
             }
           },
           {
             factorMethod: {
-              scale: 0.20,
+              name: "power_inverse", scale: undefined, offset: undefined, power: undefined,
             },
             displacementMethod: {
-              thresholdRadius: 0.2
+              name: "threshold", thresholdRadius: 0.1
+            }
+          },
+          {
+            factorMethod: {
+              name: "power_inverse", scale: undefined, offset: undefined, power: undefined,
+            },
+            displacementMethod: {
+              name: "threshold", thresholdRadius: 0.1
+            }
+          },
+          {
+            factorMethod: {
+              name: "power_inverse", scale: undefined, offset: undefined, power: undefined,
+            },
+            displacementMethod: {
+              name: "threshold", thresholdRadius: 0.1
             }
           },
         ];
