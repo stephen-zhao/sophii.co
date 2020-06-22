@@ -1,6 +1,6 @@
 <html>
   <head>
-    <script src="https://cdn.jsdelivr.net/npm/@zhaostephen/avoidance@0.1.1/dist/avoidance.var.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@zhaostephen/avoidance/dist/avoidance.var.min.js"></script>
     <style>
       .containers-grid-shell {
         padding: 10px;
@@ -60,10 +60,17 @@
           <div class="particle-container">
           </div>
         </div>
+        <div class="container-panel" data-key="3">
+          <input type="button" value="Add particle" class="add-particle-btn">
+          <input type="button" value="Remove particle" class="remove-particle-btn">
+          <span class="particle-count"></span>
+          <div class="particle-container">
+          </div>
+        </div>
       </div>
     </div>
     <script>
-      var NUM_OF_CONTAINERS = 3;
+      var NUM_OF_CONTAINERS = 4;
       (function() {
 
         // HELPER FUNCTIONS
@@ -97,7 +104,7 @@
           btn.addEventListener("click", function() {
             var key = parseInt(this.parentElement.getAttribute("data-key"));
             var particles = addParticles(`.container-panel[data-key='${key}']>.particle-container`, 1);
-            avoidances[key].addParticleElement(particles[0]);
+            avoidances[key].addParticleElement(particles[0], particles[0].parentElement);
             document.querySelector(`.container-panel[data-key='${key}']>.particle-count`).innerHTML = ++particleCounts[key];
           });
         });
@@ -116,7 +123,7 @@
         // INITIALIZE CONTAINERS
 
         var initialParticleCounts = [
-          50, 50, 50
+          50, 50, 50, 50
         ]
         var particleCounts = Array.from(initialParticleCounts)
         for (var i = 0; i < NUM_OF_CONTAINERS; ++i) {
@@ -131,17 +138,28 @@
         var avoidanceOptions = [
           {
             factorMethod: {
-              scale: 0.7,
+              scale: 0.005,
             }
           },
           {
             factorMethod: {
-              scale: 1.0,
+              scale: 0.02,
             }
           },
           {
             factorMethod: {
-              scale: 2.5,
+              scale: 0.05,
+            },
+            displacementMethod: {
+              thresholdRadius: 0.2
+            }
+          },
+          {
+            factorMethod: {
+              scale: 0.20,
+            },
+            displacementMethod: {
+              thresholdRadius: 0.2
             }
           },
         ];
