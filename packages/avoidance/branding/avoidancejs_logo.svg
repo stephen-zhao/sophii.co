@@ -3,46 +3,22 @@
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 width="480px" height="120px" viewBox="0 0 480 120" enable-background="new 0 0 480 120" xml:space="preserve">
-<style type="text/css">
-<![CDATA[
-@font-face{font-family:'WorkSans-Regular';src:url("data:;base64,\
-T1RUTwADACAAAQAQQ0ZGIIb4UiAAAACYAAAGiUdQT1Ow5r+6AAAHJAAAAK5jbWFwAWwB/QAAADwA\
-AABcAAAAAQAAAAMAAAAMAAQAUAAAABAAEAADAAAALgBhAGUAagBvAHMAdv//AAAALgBhAGMAaQBu\
-AHMAdv///9P/of+g/53/mv+X/5UAAQAAAAAAAAAAAAAAAAAAAAABAAQCAAEBARFXb3JrU2Fucy1S\
-ZWd1bGFyAAEBAST4GwwA+BgE+BwMFfts++UcBQP64AX3Rg/3XBD3XhGRHAaDEgACAQFdakNvcHly\
-aWdodCAyMDE5IFRoZSBXb3JrIFNhbnMgUHJvamVjdCBBdXRob3JzIChodHRwczovL2dpdGh1Yi5j\
-b20vd2Vpd2VpaHVhbmdodWFuZy9Xb3JrLVNhbnMpL0ZTVHlwZSAwIGRlZgAAAQAPAABCAABEAgBK\
-AQBPAQBUAABXAAAAAAwCAAEAGQBPASwByQJlAw4DTQPHBCMExAWBBZ0g9xbbFfeE+Ij7hAY7/NgV\
-+Sj4JP0oBw73GfcMFZ6bhX+XH5d/kXt4GniFe39/Hn9/e4V4G3h7kZd/H3+XhZueGp6Rm5eXHpeX\
-m5GeGw5i+BX31xWwgah3oB6fd2+VZhtoboR8cx9zfHlygGpKsxiYsKSqr6IIoq+4lsAbr6yFf6gf\
-qH6jeZxyCJxyk2pkGvuGB3OYf6SYl42Olx6HTAWEfnmIdht4eY+SfB98kn+XgpoIgpqHnaIalQef\
-iINxfXZ4exl4enV/c4QIg3Nzh3Qbbm+QlXIfcpV3mnygCHyfg6SpGrCYqqSkHqSjrZu4lPdashhJ\
-B/s1amqEc4J7fxl7f4N6dhp2k3ucfh5+m6KEqRueno6QnR+ckJuSmZaZlZaYk5sIk5qPnqAaDlz3\
-wPiSFa6phoCmH6WAonyed553m3OXcD9nGICre6R2nAicdW+TaBtqboR8cx9zfHl1fm8Ifm6FaWMa\
-ZJFpmG4emG6ddqN8CHyjqIOsG6Wij5OeH56TmpeYmpeak56QodVxGIBse3F4dXd1c3pwgAh/b2uF\
-aBtcYpWgZh9moG+pdrIIdrKBucEawZW6oLIeoLKnqLCgCKCwtJW6Gw6f97SBFWJllaBoH2igcKl2\
-sgh2soG5wRrClrqhsh6hsqior6AIn6+ylbQbtK+AdqofqXafbpVogYQY9+zb/W5FB4T3DZaRhm6A\
-cnp3GXl2dXxygAiAcXCGbhuT0RWrp5Obox+im56imKkImKiRrrMasYWsfqYefqZ5oHSaCJp0cJJs\
-G1hkemhvH29ofV1SGlKZXaZoHmimsnq8Gw5t98KBFVxhlaBmH2agbql2sgh2soG5wRrBlbqgsh6g\
-sqeor6AIoK+0lbkburOBd6wfrHekcJxpCJxolGVgGoCLgIqCHoqCioKKhAj8KNL4BQZigwW7frBx\
-pR6lcGmYYBtqb4R8dB9zfHl1fm8Ifm6EaWMaZJJpmG4emG6edqR8CHyjqIOtG7CpkpmiH6KZnZ6Z\
-o8pmGH50e3h4end6dH9xggiCcG6GahsO9xn46BV5fZGWgB+AloWZnRqdkZqWlh6WlpmQnRudmoaA\
-lh+WgJB8eRp5hn2AgB6AgHyFeRuzKxX8iDv4iAcO9xn46BV5fZGWgB+AloWZnRqdkZqWlh6WlpmQ\
-nRudmoaAlh+WgJB8eRp5hn2AgB6AgHyFeRuzKxX8uwdig2p7cx57c3d6dIEIgXR0hnQbdniOknof\
-epF8k4CUnNcYlIKXhJmFCIWZm4icG6CdkpmZH5iZkqOuGvizBw6X6Bb4iNEHkvsEfpaWppmgnZwZ\
-nZugl6OSCJKipI+kG6+shH6oH6h9o3adbwicb5RnYBr71Dv3uAfCf7J0oR6gc26WaBtzc4WAcx9z\
-gHd4fHIIe3KDaWAa+54HDoT3wPiSFbq1gXawH692p26gZAigZJVcVRpVgV12ZB52ZG9tZ3YIdmZh\
-gVwbXGKVoGYfZqBvqXayCHaygbnBGsGVuqCyHqCyp6iwoAigsLSVuhtGBGlug3xzH3N8eXV+bwh+\
-boRpYxpkkmmYbh6Ybp11o3wIfKOog60braiTmqMfo5qeoZioCJioka2yGrOFrX6oHn6neKFzmgia\
-c26TaRsOO/elgRVaX5WgYh9ioGuodbHPvBiabKBzqHoIeqetgrMbrqeSmZ8fn5iVnaEamYeYgpce\
-gpZ5lHKQ+wykGFqVaZx2ogh2ooCorhqmk6Sboh6aoqKdqJkImKitkrIbvLWBeK0frXikb5xoSF8Y\
-gKh4oXKZCJhycJJwG3N3iIR6H3qEfoKCgAiCf4Z+fBp8kH6Vfx6Vfp6Cpob3EXEYuoKre552CJ52\
-lHFsGmyDb3p0HnpzdHltfgh+bWiFZBsONPg8+IgV3wb7ZPyIBTsG+2T4iAXmBvcy/DcFDveeFPjz\
-FQAAAAABAAAACgAeACwAAURGTFQACAAEAAAAAP//AAEAAAABa2VybgAIAAAAAQAAAAEABAACAAAA\
-AQAIAAEAYgAEAAAACAAaADAANgA8AEIASABOAFQABQAD/+wABP/sAAX/7AAJ/+wAC/+2AAEAC//v\
-AAEAC//2AAEAC//yAAEAC//zAAEAAf/sAAEAC//zAAMAAf+2AAL/8wAK//MAAQAIAAEAAgADAAUA\
-CAAJAAoACwAA")}
-]]>
-</style>
-<text transform="matrix(1 0 0 1 25.4429 82.875)"><tspan x="0" y="0" font-family="'WorkSans-Regular'" font-size="72">avoi</tspan><tspan x="140.542" y="0" fill="#5236CC" font-family="'WorkSans-Regular'" font-size="72">dance</tspan><tspan x="352.868" y="0" font-family="'WorkSans-Regular'" font-size="72">.js</tspan></text>
+<font horiz-adv-x="1000">
+<!-- Copyright 2014, 2015 Adobe Systems Incorporated (http://www.adobe.com/). Noto is a trademark of Google Inc. -->
+<font-face font-family="NotoSansJP-Medium-90ms-RKSJ-H" units-per-em="1000" underline-position="-150" underline-thickness="50"/>
+<missing-glyph horiz-adv-x="1000" d="M100,-120l800,0l0,1000l-800,0M500,421l-318,409l636,0M532,380l318,409l0,-818M182,-70l318,409l318,-409M150,789l318,-409l-318,-409z"/>
+<glyph unicode="." horiz-adv-x="298" d="M149,-13C192,-13 226,20 226,67C226,114 192,149 149,149C106,149 72,114 72,67C72,20 106,-13 149,-13z"/>
+<glyph unicode="a" horiz-adv-x="575" d="M217,-13C283,-13 342,20 392,63l3,0l10,-63l94,0l0,331C499,477 436,564 299,564C211,564 134,528 77,492l43,-78C167,444 221,470 279,470C360,470 383,414 384,350C155,325 55,264 55,146C55,49 122,-13 217,-13M252,78C203,78 166,100 166,154C166,216 221,257 384,277l0,-135C339,101 300,78 252,78z"/>
+<glyph unicode="c" horiz-adv-x="517" d="M311,-13C374,-13 439,10 489,55l-47,76C409,103 368,81 322,81C230,81 167,158 167,274C167,391 233,469 325,469C363,469 394,453 424,426l57,75C441,536 390,564 320,564C175,564 48,458 48,274C48,92 162,-13 311,-13z"/>
+<glyph unicode="d" horiz-adv-x="630" d="M277,-13C339,-13 396,20 437,62l3,0l10,-62l94,0l0,797l-115,0l0,-204l5,-91C389,540 349,564 286,564C163,564 50,453 50,274C50,92 139,-13 277,-13M304,82C218,82 169,151 169,276C169,395 231,468 308,468C349,468 388,455 429,418l0,-269C389,103 350,82 304,82z"/>
+<glyph unicode="e" horiz-adv-x="565" d="M316,-13C388,-13 451,11 502,45l-40,73C422,92 380,77 331,77C236,77 170,140 161,245l357,0C521,258 523,281 523,303C523,459 445,564 299,564C170,564 48,453 48,274C48,93 167,-13 316,-13M160,324C171,421 232,474 301,474C381,474 424,419 424,324z"/>
+<glyph unicode="i" horiz-adv-x="287" d="M87,0l114,0l0,550l-114,0M144,653C186,653 218,681 218,721C218,762 186,789 144,789C102,789 71,762 71,721C71,681 102,653 144,653z"/>
+<glyph unicode="j" horiz-adv-x="288" d="M37,-237C159,-237 203,-156 203,-41l0,591l-115,0l0,-593C88,-108 74,-145 22,-145C5,-145 -12,-140 -27,-136l-21,-86C-28,-230 0,-237 37,-237M145,653C187,653 219,681 219,721C219,762 187,789 145,789C103,789 72,762 72,721C72,681 103,653 145,653z"/>
+<glyph unicode="n" horiz-adv-x="624" d="M87,0l114,0l0,390C250,439 285,465 336,465C401,465 429,427 429,332l0,-332l115,0l0,346C544,486 492,564 375,564C300,564 244,523 193,474l-3,0l-9,76l-94,0z"/>
+<glyph unicode="o" horiz-adv-x="614" d="M307,-13C443,-13 566,92 566,274C566,458 443,564 307,564C171,564 48,458 48,274C48,92 171,-13 307,-13M307,81C221,81 167,158 167,274C167,391 221,469 307,469C394,469 448,391 448,274C448,158 394,81 307,81z"/>
+<glyph unicode="s" horiz-adv-x="480" d="M236,-13C372,-13 445,62 445,154C445,258 360,292 283,321C223,343 166,361 166,408C166,446 194,476 254,476C300,476 339,456 377,428l54,71C386,534 326,564 252,564C131,564 57,495 57,403C57,310 141,271 214,243C274,220 336,198 336,148C336,106 305,74 239,74C180,74 132,98 83,137l-54,-74C82,19 160,-13 236,-13z"/>
+<glyph unicode="v" horiz-adv-x="545" d="M208,0l133,0l190,550l-112,0l-94,-296C310,200 293,144 277,90l-4,0C257,144 240,200 225,254l-94,296l-118,0z"/>
+</font>
+
+	<text transform="matrix(1 0 0 1 24.0747 84.875)"><tspan x="0" y="0" font-family="'NotoSansJP-Medium-90ms-RKSJ-H'" font-size="72">avoi</tspan><tspan x="145.511" y="0" fill="#5236CC" font-family="'NotoSansJP-Medium-90ms-RKSJ-H'" font-size="72">dance</tspan><tspan x="355.1" y="0" font-family="'NotoSansJP-Medium-90ms-RKSJ-H'" font-size="72">.js</tspan></text>
 </svg>
