@@ -1,0 +1,20 @@
+{
+  "name": "avoidance-test",
+  "version": "0.0.1",
+  "description": "Test project for avoidance.js",
+  "main": "index.js",
+  "author": "Stephen Zhao",
+  "license": "GNU GPLv3",
+  "dependencies": {
+    "@zhaostephen/avoidance": "file:../avoidance"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^13.0.0",
+    "@rollup/plugin-node-resolve": "^8.1.0",
+    "rollup": "^2.18.1"
+  },
+  "scripts": {
+    "start": "rollup -c --watch",
+    "build": "rollup -c"
+  }
+}
