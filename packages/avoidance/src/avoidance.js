@@ -230,10 +230,18 @@ export default class Avoidance {
   start() {
     // Add all event handlers to each container
     this.containers.forEach(this.registerEventHandlers, this);
+    // Let particles know movement has started
+    this.trackedParticles.forEach(particle => {
+      particle.unfreeze();
+    });
     this.status = "running";
   }
 
   stop() {
+    // Let all particles know to stop
+    this.trackedParticles.forEach(particle => {
+      particle.freeze();
+    });
     // remove all event handlers from each container
     this.containers.forEach(this.deregisterEventHandlers, this);
     this.status = "stopped";
@@ -580,5 +588,16 @@ Avoidance.Particle = class {
   }
   dispose() {
     // TODO: return particle to original location, either by setting style or removing location style
+  }
+  unfreeze() {
+    this.frozenStyledPosition = this.element.style.position;
+    const delayedUnfreezeActions = (() => {
+      this.element.style.position = 'absolute';
+      this.container.removeEventListener('mousemove', delayedUnfreezeActions);
+    }).bind(this);
+    this.container.addEventListener('mousemove', delayedUnfreezeActions);
+  }
+  freeze() {
+    this.element.style.position = this.element.style.position;
   }
 }

@@ -42,6 +42,7 @@
         <div class="container-panel" data-key="0">
           <input type="button" value="Add particle" class="add-particle-btn">
           <input type="button" value="Remove particle" class="remove-particle-btn">
+          <input type="button" value="Stop" class="stop-start-btn">
           <span class="particle-count"></span>
           <div class="particle-container">
           </div>
@@ -49,6 +50,7 @@
         <div class="container-panel" data-key="1">
           <input type="button" value="Add particle" class="add-particle-btn">
           <input type="button" value="Remove particle" class="remove-particle-btn">
+          <input type="button" value="Stop" class="stop-start-btn">
           <span class="particle-count"></span>
           <div class="particle-container">
           </div>
@@ -56,6 +58,7 @@
         <div class="container-panel" data-key="2">
           <input type="button" value="Add particle" class="add-particle-btn">
           <input type="button" value="Remove particle" class="remove-particle-btn">
+          <input type="button" value="Stop" class="stop-start-btn">
           <span class="particle-count"></span>
           <div class="particle-container">
           </div>
@@ -63,6 +66,7 @@
         <div class="container-panel" data-key="3">
           <input type="button" value="Add particle" class="add-particle-btn">
           <input type="button" value="Remove particle" class="remove-particle-btn">
+          <input type="button" value="Stop" class="stop-start-btn">
           <span class="particle-count"></span>
           <div class="particle-container">
           </div>
@@ -116,6 +120,20 @@
             if (particle) {
               avoidances[key].removeParticleElement(particle);
               document.querySelector(`.container-panel[data-key='${key}']>.particle-count`).innerHTML = --particleCounts[key];
+            }
+          });
+        });
+
+        document.querySelectorAll(".stop-start-btn").forEach(function(btn) {
+          btn.addEventListener("click", function() {
+            var key = parseInt(this.parentElement.getAttribute("data-key"));
+            if (avoidances[key].status === "running") {
+              avoidances[key].stop();
+              this.value = "Start";
+            }
+            else {
+              avoidances[key].start();
+              this.value = "Stop";
             }
           });
         });

@@ -273,13 +273,21 @@
       key: "start",
       value: function start() {
         // Add all event handlers to each container
-        this.containers.forEach(this.registerEventHandlers, this);
+        this.containers.forEach(this.registerEventHandlers, this); // Let particles know movement has started
+
+        this.trackedParticles.forEach(function (particle) {
+          particle.unfreeze();
+        });
         this.status = "running";
       }
     }, {
       key: "stop",
       value: function stop() {
-        // remove all event handlers from each container
+        // Let all particles know to stop
+        this.trackedParticles.forEach(function (particle) {
+          particle.freeze();
+        }); // remove all event handlers from each container
+
         this.containers.forEach(this.deregisterEventHandlers, this);
         this.status = "stopped";
       }
@@ -680,6 +688,26 @@
       key: "dispose",
       value: function dispose() {// TODO: return particle to original location, either by setting style or removing location style
       }
+    }, {
+      key: "unfreeze",
+      value: function unfreeze() {
+        var _this3 = this;
+
+        this.frozenStyledPosition = this.element.style.position;
+
+        var delayedUnfreezeActions = function () {
+          _this3.element.style.position = 'absolute';
+
+          _this3.container.removeEventListener('mousemove', delayedUnfreezeActions);
+        }.bind(this);
+
+        this.container.addEventListener('mousemove', delayedUnfreezeActions);
+      }
+    }, {
+      key: "freeze",
+      value: function freeze() {
+        this.element.style.position = this.element.style.position;
+      }
     }]);
 
     return _class;
@@ -688,3 +716,4 @@
   return Avoidance;
 
 })));
+//# sourceMappingURL=avoidance.js.map
