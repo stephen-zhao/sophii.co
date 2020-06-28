@@ -1,8 +1,5 @@
 # node_modules
 **/node_modules/
 
-# dev build artifacts
-**/dist_dev/
-
 # yarn
 **/yarn-error.log

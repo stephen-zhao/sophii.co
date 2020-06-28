@@ -1,0 +1,7 @@
+# ignore non-distributable files
+/src/**/*
+/test/**/*
+/branding/**/*
+
+# yarn
+yarn-error.log
