@@ -3,3 +3,6 @@
 
 # dev build artifacts
 **/dist_dev/
+
+# yarn
+**/yarn-error.log
