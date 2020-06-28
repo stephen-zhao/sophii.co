@@ -2,9 +2,12 @@
   "name": "@zhaostephen/avoidance",
   "version": "0.2.1",
   "description": "A standalone library for creating avoidance-cloud particle effects, beautifully.",
-  "main": "dist/avoidance.var.min.js",
-  "module": "src/avoidance.js",
-  "browser": "dist/avoidance.var.min.js",
+  "main": "dist/avoidance.js",
+  "module": "dist/avoidance.js",
+  "browser": "dist/avoidance.min.js",
+  "files": [
+    "dist/**/*"
+  ],
   "repository": "https://github.com/stephen-zhao/sophii.co",
   "author": "Stephen Zhao",
   "license": "GNU GPLv3",
@@ -13,16 +16,19 @@
     "@babel/core": "^7.10.2",
     "@babel/preset-env": "^7.10.2",
     "@babel/preset-typescript": "^7.10.1",
+    "@rollup/plugin-babel": "^5.0.4",
+    "@rollup/plugin-commonjs": "^13.0.0",
+    "@rollup/plugin-node-resolve": "^8.1.0",
     "babel-loader": "^8.1.0",
-    "parallel-webpack": "^2.6.0",
-    "terser-webpack-plugin": "^3.0.6",
-    "typescript": "^3.9.5",
-    "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.12"
+    "rollup": "^2.18.1",
+    "rollup-plugin-terser": "^6.1.0",
+    "typescript": "^3.9.5"
   },
   "scripts": {
-    "build-watch": "parallel-webpack --watch -- --mode=development",
-    "build-prod": "parallel-webpack -- --mode=production",
+    "prepublishOnly": "rollup -c",
+    "build": "rollup -c",
+    "start": "rollup -c --watch",
     "check-types": "tsc"
-  }
+  },
+  "dependencies": {}
 }
