@@ -6,7 +6,7 @@
   "author": "Stephen Zhao",
   "license": "GNU GPLv3",
   "dependencies": {
-    "@zhaostephen/avoidance": "file:../avoidance"
+    "@zhaostephen/avoidance": "^0.2.3"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^13.0.0",

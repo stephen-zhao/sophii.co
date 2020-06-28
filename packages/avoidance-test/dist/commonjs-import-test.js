@@ -20,7 +20,7 @@
 	}
 
 	var avoidance = createCommonjsModule(function (module, exports) {
-	// avoidance.js v0.2.1  | (c) 2020 Stephen Zhao | GNU GPLv3 License | https://github.com/stephen-zhao/sophii.co
+	// avoidance.js v0.2.3  | (c) 2020 Stephen Zhao | GNU GPLv3 License | https://github.com/stephen-zhao/sophii.co
 	(function (global, factory) {
 	   module.exports = factory() ;
 	}(commonjsGlobal, (function () {
