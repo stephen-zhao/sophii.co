@@ -5,6 +5,20 @@
   "main": "dist/avoidance.js",
   "module": "dist/avoidance.js",
   "browser": "dist/avoidance.min.js",
+  "keywords": [
+    "avoid",
+    "mouse",
+    "cursor",
+    "cloud",
+    "move away",
+    "repel",
+    "touch",
+    "browser ready",
+    "particle effect",
+    "standalone",
+    "visual effect",
+    "special effect"
+  ],
   "files": [
     "dist/**/*"
   ],
