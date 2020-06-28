@@ -1,4 +1,4 @@
-// avoidance.js v0.2.1  | (c) 2020 Stephen Zhao | GNU GPLv3 License | https://github.com/stephen-zhao/sophii.co
+// avoidance.js v0.2.2  | (c) 2020 Stephen Zhao | GNU GPLv3 License | https://github.com/stephen-zhao/sophii.co
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
