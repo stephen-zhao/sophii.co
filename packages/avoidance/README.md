@@ -22,15 +22,26 @@ The two easiest ways to use **avoidance.js** are
 
 ### To CDN:
 
-Paste the following into your HTML, either inside `<head>` or at the end of `<body>`, before any javascript that makes use of it.
+Choose one of the following script tags to add directly to your HTML.
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@zhaostephen/avoidance@0.2.1/dist/avoidance.var.min.js">
+<!-- Get a specific version -->
+<script src="https://cdn.jsdelivr.net/npm/@zhaostephen/avoidance@0.2.3/dist/avoidance.min.js"></script>
+
+<!-- Get patch fixes within the minor version -->
+<script src="https://cdn.jsdelivr.net/npm/@zhaostephen/avoidance@0.2/dist/avoidance.min.js"></script>
+
+<!-- Get minor updates and patch fixes within the major version -->
+<script src="https://cdn.jsdelivr.net/npm/@zhaostephen/avoidance@0/dist/avoidance.min.js"></script>
+
+<!-- Always get the latest version -->
+<!-- Not recommended for production sites! Only use if you know what you're doing. -->
+<script src="https://cdn.jsdelivr.net/npm/@zhaostephen/avoidance/dist/avoidance.min.js"></script>
 ```
 
-### To install to node project:
+### To install to a Node.js project:
 
-Run in one of the following (depending on your package manager):
+Run in one of the following in your project directory (depending on your package manager):
 
 ```sh
 yarn add @zhaostephen/avoidance
@@ -43,11 +54,19 @@ npm install --save @zhaostephen/avoidance
 
 #### Import
 
-If using with modules, first import the library's main entry point. If using directly in browser, skip this step.
+If using with ES modules, import the library like so:
 
 ```js
 import Avoidance from "@zhaostephen/avoidance";
 ```
+
+If using CommonJS, import the library like so:
+
+```js
+const Avoidance = require("@zhaostephen/avoidance");
+```
+
+If using directly in the browser, the library is accessible through a global variable, `Avoidance`.
 
 #### Create and run
 
