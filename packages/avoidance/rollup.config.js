@@ -49,6 +49,7 @@ const configs = [
         format: 'umd',
         name: 'Avoidance',
         file: 'dist/avoidance.js',
+        sourcemap: true,
         banner: bannerContent,
       },
       {
