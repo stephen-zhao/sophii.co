@@ -8,6 +8,7 @@
 import { Particle } from './particle';
 import * as animate from './animate';
 import * as geometry from './geometry';
+import * as util from './util';
 
 // The class which exposes the public API
 export default class Avoidance {
@@ -375,8 +376,8 @@ export default class Avoidance {
       if (particle.element.style.display === "none") {
         particle.element.style.display = "";
       }
-      particle.element.style.left = Avoidance.math.toPctStr(particleNewPos.x);
-      particle.element.style.top = Avoidance.math.toPctStr(particleNewPos.y);
+      particle.element.style.left = util.floatToPctStr(particleNewPos.x);
+      particle.element.style.top = util.floatToPctStr(particleNewPos.y);
     }
   }
 
@@ -498,11 +499,5 @@ Avoidance.calculateAvoidanceDisplacement = {
         };
       }
     }
-  }
-}
-
-Avoidance.math = {
-  toPctStr: function(x) {
-    return (100.0 * x) + "%";
   }
 }

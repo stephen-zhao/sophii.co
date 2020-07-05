@@ -1,4 +1,5 @@
 import { IPoint } from './geometry';
+import { floatToPctStr } from './util';
 
 const FRAME_DURATION = 10.0;
 
@@ -47,8 +48,8 @@ export function move(element: HTMLElement, pathing: PathFn, duration: number, ti
     // Calculate position
     const pos = pathing(distance);
     // Render
-    element.style.left = (100.0 * pos.x) + "%";
-    element.style.top = (100.0 * pos.y) + "%";
+    element.style.left = floatToPctStr(pos.x);
+    element.style.top = floatToPctStr(pos.y);
     // Update vars for next iteration
     time = time + FRAME_DURATION;
     distance = distanceFromTime(time);
