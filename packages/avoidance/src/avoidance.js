@@ -6,6 +6,7 @@
 // All children of given containers will be animated to avoid the user's mouse.
 
 import { Particle } from './particle';
+import * as animate from './animate';
 
 // The class which exposes the public API
 export default class Avoidance {
@@ -146,17 +147,17 @@ export default class Avoidance {
     // Process timings
     if ("timing" in userOptions
         && (typeof userOptions.timing === "string")
-        && (userOptions.timing in Avoidance.animate.timings)) {
-      options.timing = Avoidance.animate.timings[userOptions.timing];
+        && (userOptions.timing in animate.timings)) {
+      options.timing = animate.timings[userOptions.timing];
     }
     else {
-      options.timing = Avoidance.animate.timings.easeOutExpo;
+      options.timing = animate.timings.easeOutExpo;
     }
     
     // Process pathing
     if ("pathing" in userOptions
         && (typeof userOptions.pathing === "string")
-        && (userOptions.pathing in Avoidance.animate.paths)) {
+        && (userOptions.pathing in animate.paths)) {
       options.pathing = userOptions.pathing;
     }
     else {
@@ -392,9 +393,9 @@ export default class Avoidance {
         particle.element.style.display = "";
       }
       const pathing = this.options.pathing === "bezierQuad"
-        ? Avoidance.animate.paths.bezierQuad(particleOldPosRatio, particle.originalPosRatio, particleNewPosRatio)
-        : Avoidance.animate.paths.linear(particleOldPosRatio, particleNewPosRatio);
-      Avoidance.animate.move(particle.element, pathing, 1000, this.options.timing);
+        ? animate.paths.bezierQuad(particleOldPosRatio, particle.originalPosRatio, particleNewPosRatio)
+        : animate.paths.linear(particleOldPosRatio, particleNewPosRatio);
+      animate.move(particle.element, pathing, 1000, this.options.timing);
     }
   }
 
@@ -519,46 +520,4 @@ Avoidance.math = {
   toPctStr: function(x) {
     return (100.0 * x) + "%";
   }
-}
-
-Avoidance.animate = {
-  FRAME_DURATION: 10.0,
-  timings: {
-    linear: duration => t => t/duration,
-    easeOutCubic: duration => t => 1+Math.pow(t/duration-1, 3),
-    easeOutExpo: duration => t => 1-Math.pow(2, -10*t/duration),
-  },
-  paths: {
-    linear: function(p0, p1) {
-      return s => ({
-        x: p0.x + s*(p1.x - p0.x),
-        y: p0.y + s*(p1.y - p0.y),
-      });
-    },
-    bezierQuad: function(p0, p1, p2) {
-      return s => ({
-        x: p1.x + (1.0-s)*(1.0-s)*(p0.x-p1.x) + s*s*(p2.x-p1.x),
-        y: p1.y + (1.0-s)*(1.0-s)*(p0.y-p1.y) + s*s*(p2.y-p1.y),
-      }); // 0 <= s <= 1
-    },
-  },
-  move: function(element, pathing, duration, timing) {
-    var time = 0;
-    var distance = 0;
-    const distanceFromTime = timing(duration);
-    const animation = setInterval(() => {
-      // Check for final condition
-      if (time >= duration) {
-        clearInterval(animation);
-      }
-      // Calculate position
-      const pos = pathing(distance);
-      // Render
-      element.style.left = Avoidance.math.toPctStr(pos.x);
-      element.style.top = Avoidance.math.toPctStr(pos.y);
-      // Update vars for next iteration
-      time = time + this.FRAME_DURATION;
-      distance = distanceFromTime(time);
-    }, this.FRAME_DURATION);
-  },
 }
