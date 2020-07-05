@@ -1,10 +1,4 @@
-
-
-
-interface IPoint {
-  x: number;
-  y: number;
-}
+import { IPoint } from './geometry';
 
 const FRAME_DURATION = 10.0;
 
@@ -21,7 +15,6 @@ export const timings: TimingFnBuilderMap = {
 }
 
 // Path functions
-
 type PathFn = (s: number) => IPoint;
 type PathFnBuilder = (controlPoints: Array<IPoint>) => PathFn;
 interface PathFnBuilderMap {

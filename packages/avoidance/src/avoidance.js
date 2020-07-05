@@ -7,6 +7,7 @@
 
 import { Particle } from './particle';
 import * as animate from './animate';
+import * as geometry from './geometry';
 
 // The class which exposes the public API
 export default class Avoidance {
@@ -354,10 +355,10 @@ export default class Avoidance {
         x: particle.originalPosRatio.x + particleSizeRatio.width*1.0 / 2 - userPosRatio.x,
         y: particle.originalPosRatio.y + particleSizeRatio.height*1.0 / 2 - userPosRatio.y,
       };
-      const particleCentreOrigDistRelUser = Avoidance.geometry.getRadius(particleCentreOrigPosRatioRelUser);
+      const particleCentreOrigDistRelUser = geometry.getRadius(particleCentreOrigPosRatioRelUser);
       const avoidanceFactor = this.calculateAvoidanceFactor(particleCentreOrigDistRelUser, particleSizeRatio);
       const avoidanceDisplacement = this.calculateAvoidanceDisplacement(
-        Avoidance.geometry.getUnitVector(particleCentreOrigPosRatioRelUser), avoidanceFactor);
+        geometry.getUnitVector(particleCentreOrigPosRatioRelUser), avoidanceFactor);
       renderCallback(avoidanceDisplacement, particle);
     }, this);
   }
@@ -434,22 +435,6 @@ export default class Avoidance {
   }
 }
 
-Avoidance.geometry = {
-  getDistance: function(pointA, pointB) {
-    return Math.sqrt(Math.pow(pointA.x - pointB.x, 2) + Math.pow(pointA.y - pointB.y, 2));
-  },
-  getRadius: function(point) {
-    return Math.sqrt(point.x*point.x + point.y*point.y);
-  },
-  getUnitVector: function(point) {
-    const radius = Avoidance.geometry.getRadius(point);
-    return {
-      x: point.x / radius,
-      y: point.y / radius,
-    };
-  }
-}
-
 Avoidance.calculateAvoidanceFactor = {
   builtinMethods: {
     inverse: function(param_scale=0.02, param_offset=0.0, param_power=undefined) {
@@ -491,7 +476,7 @@ Avoidance.calculateAvoidanceDisplacement = {
           x: directionUnitVector.x*avoidanceFactor,
           y: directionUnitVector.y*avoidanceFactor,
         };
-        if (Avoidance.geometry.getRadius(offset) > param_threshold_radius) {
+        if (geometry.getRadius(offset) > param_threshold_radius) {
           return {
             x: directionUnitVector.x*param_threshold_radius,
             y: directionUnitVector.y*param_threshold_radius,
