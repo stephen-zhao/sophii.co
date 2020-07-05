@@ -5,6 +5,7 @@
   "main": "dist/avoidance.js",
   "module": "dist/avoidance.js",
   "browser": "dist/avoidance.min.js",
+  "types": "dist/types/avoidance.d.ts",
   "keywords": [
     "avoid",
     "mouse",
@@ -26,8 +27,9 @@
   "author": "Stephen Zhao",
   "license": "GNU GPLv3",
   "devDependencies": {
-    "@babel/cli": "^7.10.1",
     "@babel/core": "^7.10.2",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/plugin-proposal-object-rest-spread": "^7.10.4",
     "@babel/preset-env": "^7.10.2",
     "@babel/preset-typescript": "^7.10.1",
     "@rollup/plugin-babel": "^5.0.4",
@@ -38,10 +40,13 @@
     "typescript": "^3.9.5"
   },
   "scripts": {
-    "prepublishOnly": "rollup -c",
-    "build": "rollup -c",
-    "start": "rollup -c --watch",
-    "check-types": "tsc"
+    "prepublishOnly": "yarn build",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "tsc --noEmit --watch",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "rollup -c",
+    "build:js:watch": "rollup -c --watch",
+    "build": "yarn run build:types && yarn run build:js"
   },
   "dependencies": {}
 }

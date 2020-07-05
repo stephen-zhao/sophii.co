@@ -3,9 +3,16 @@
     "target": "esnext",
     "moduleResolution": "node",
     "allowJs": true,
-    // Only use tsc for type-checking, so there is no emit
-    "noEmit": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    // Typescript Options
+    "strict": true,
+    "allowSyntheticDefaultImports": true,
+    // For declaration file output
+    "declaration": true,
+    "declarationDir": "dist/types",
+    // For intermediate / temporary build output
+    // (not used for prod builds, and should be ignored)
+    "outDir": "build"
   },
   "include": ["src/**/*"]
 }

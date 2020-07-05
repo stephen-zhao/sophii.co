@@ -10,6 +10,10 @@ const variables = {
   colloquialName: 'avoidance.js'
 }
 
+const extensions = [
+  '.js', '.ts'
+];
+
 // Banner
 const bannerContent = (contents => {
   if (Array.isArray(contents)) {
@@ -62,10 +66,12 @@ const configs = [
       },
     ],
     plugins: [
-      resolve(),
+      resolve({ extensions }),
       commonjs(),
       babel({
         babelHelpers: 'bundled',
+        extensions,
+        include: ['src/**/*'],
       }),
     ],
     watch: {
