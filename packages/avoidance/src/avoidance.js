@@ -5,6 +5,8 @@
 // A standalone library for creating "avoidance cloud" effect.
 // All children of given containers will be animated to avoid the user's mouse.
 
+import { Particle } from './particle';
+
 // The class which exposes the public API
 export default class Avoidance {
   // input:
@@ -187,7 +189,7 @@ export default class Avoidance {
       if (!containerElement) {
         containerElement = document.body;
       }
-      var particle = new Avoidance.Particle(particleElement, containerElement);
+      var particle = new Particle(particleElement, containerElement);
       this.trackedParticles.push(particle);
       this.trackedParticleElementsSet.add(particleElement);
     }
@@ -559,45 +561,4 @@ Avoidance.animate = {
       distance = distanceFromTime(time);
     }, this.FRAME_DURATION);
   },
-}
-
-Avoidance.Particle = class {
-  constructor(element, container) {
-    // Save both elements
-    this.element = element;
-    this.container = container;
-    this.originalPosRatio = this.getPosRatio();
-  }
-  getPosRatio() {
-    // Get position as percentage of container to get built-in responsiveness!
-    const elementRect = this.element.getBoundingClientRect();
-    const containerRect = this.container.getBoundingClientRect();
-    return {
-      x: (elementRect.left - containerRect.left) / containerRect.width,
-      y: (elementRect.top - containerRect.top) / containerRect.height,
-    };
-  }
-  getSizeRatio() {
-    // Get size as percentage of container to get built-in responsiveness!
-    const elementRect = this.element.getBoundingClientRect();
-    const containerRect = this.container.getBoundingClientRect();
-    return {
-      width: elementRect.width / containerRect.width,
-      height: elementRect.height / containerRect.height,
-    };
-  }
-  dispose() {
-    // TODO: return particle to original location, either by setting style or removing location style
-  }
-  unfreeze() {
-    this.frozenStyledPosition = this.element.style.position;
-    const delayedUnfreezeActions = (() => {
-      this.element.style.position = 'absolute';
-      this.container.removeEventListener('mousemove', delayedUnfreezeActions);
-    }).bind(this);
-    this.container.addEventListener('mousemove', delayedUnfreezeActions);
-  }
-  freeze() {
-    this.element.style.position = this.element.style.position;
-  }
 }
