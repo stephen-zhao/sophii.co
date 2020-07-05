@@ -9,6 +9,7 @@ import { Particle } from './particle';
 import * as animate from './animate';
 import * as geometry from './geometry';
 import * as util from './util';
+import { builtinThresholdingMethods } from './thresholding';
 
 // The class which exposes the public API
 export default class Avoidance {
@@ -119,14 +120,14 @@ export default class Avoidance {
     options.displacementMethod = {};
     if ("displacementMethod" in userOptions) {
       if (typeof userOptions.displacementMethod === "string"
-          && (userOptions.displacementMethod in Avoidance.calculateAvoidanceDisplacement.builtinMethods)) {
+          && (userOptions.displacementMethod in builtinThresholdingMethods)) {
         options.displacementMethod.name = userOptions.displacementMethod;
         options.displacementMethod.thresholdRadius = undefined;
       }
       else if (typeof userOptions.displacementMethod === "object") {
         if (("name" in userOptions.displacementMethod)
             && (typeof userOptions.displacementMethod.name === "string")
-            && (userOptions.displacementMethod.name in Avoidance.calculateAvoidanceDisplacement.builtinMethods)) {
+            && (userOptions.displacementMethod.name in builtinThresholdingMethods)) {
           options.displacementMethod.name = userOptions.displacementMethod.name;
         }
         else {
@@ -425,10 +426,10 @@ export default class Avoidance {
     }
     var methodFn = null;
     if (method !== undefined) {
-      methodFn = Avoidance.calculateAvoidanceDisplacement.builtinMethods[method];
+      methodFn = builtinThresholdingMethods[method];
     }
     else {
-      methodFn = Avoidance.calculateAvoidanceDisplacement.builtinMethods.threshold;
+      methodFn = builtinThresholdingMethods.threshold;
     }
     return methodFn(
       this.options.displacementMethod.thresholdRadius
@@ -461,42 +462,6 @@ Avoidance.calculateAvoidanceFactor = {
         else {
           return ((param_scale*1.0)/Math.pow(originalDistance*1.0, param_power) + param_offset);
         }
-      }
-    }
-  }
-}
-
-Avoidance.calculateAvoidanceDisplacement = {
-  builtinMethods: {
-    threshold: function(param_threshold_radius=0.1) {
-      return function(directionUnitVector, avoidanceFactor) {
-        if (avoidanceFactor === NaN) {
-          return null;
-        }
-        var offset = {
-          x: directionUnitVector.x*avoidanceFactor,
-          y: directionUnitVector.y*avoidanceFactor,
-        };
-        if (geometry.getRadius(offset) > param_threshold_radius) {
-          return {
-            x: directionUnitVector.x*param_threshold_radius,
-            y: directionUnitVector.y*param_threshold_radius,
-          };
-        }
-        else {
-          return offset;
-        }
-      }
-    },
-    noThreshold: function(param_threshold_radius=undefined) {
-      return function(directionUnitVector, avoidanceFactor) {
-        if (avoidanceFactor === NaN) {
-          return null;
-        }
-        return {
-          x: directionUnitVector.x*avoidanceFactor,
-          y: directionUnitVector.y*avoidanceFactor,
-        };
       }
     }
   }
