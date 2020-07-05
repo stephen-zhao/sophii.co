@@ -9,6 +9,7 @@ import { Particle } from './particle';
 import * as animate from './animate';
 import * as geometry from './geometry';
 import * as util from './util';
+import { builtinDisplacementFactorMethods } from './displacing';
 import { builtinThresholdingMethods } from './thresholding';
 
 // The class which exposes the public API
@@ -71,7 +72,7 @@ export default class Avoidance {
     options.factorMethod = {};
     if ("factorMethod" in userOptions) {
       if (typeof userOptions.factorMethod === "string"
-          && (userOptions.factorMethod in Avoidance.calculateAvoidanceFactor.builtinMethods)) {
+          && (userOptions.factorMethod in builtinDisplacementFactorMethods)) {
         options.factorMethod.name = userOptions.factorMethod;
         options.factorMethod.scale = undefined;
         options.factorMethod.offset = undefined;
@@ -80,7 +81,7 @@ export default class Avoidance {
       else if (typeof userOptions.factorMethod === "object") {
         if (("name" in userOptions.factorMethod)
             && (typeof userOptions.factorMethod.name === "string")
-            && (userOptions.factorMethod.name in Avoidance.calculateAvoidanceFactor.builtinMethods)) {
+            && (userOptions.factorMethod.name in builtinDisplacementFactorMethods)) {
           options.factorMethod.name = userOptions.factorMethod.name;
         }
         else {
@@ -408,10 +409,10 @@ export default class Avoidance {
     }
     var methodFn = null;
     if (method !== undefined) {
-      methodFn = Avoidance.calculateAvoidanceFactor.builtinMethods[method];
+      methodFn = builtinDisplacementFactorMethods[method];
     }
     else {
-      methodFn = Avoidance.calculateAvoidanceFactor.builtinMethods.powerInverse;
+      methodFn = builtinDisplacementFactorMethods.powerInverse;
     }
     return methodFn(
       this.options.factorMethod.scale,
@@ -434,35 +435,5 @@ export default class Avoidance {
     return methodFn(
       this.options.displacementMethod.thresholdRadius
     )(particleOrigPosRelMouse, avoidanceFactor);
-  }
-}
-
-Avoidance.calculateAvoidanceFactor = {
-  builtinMethods: {
-    inverse: function(param_scale=0.02, param_offset=0.0, param_power=undefined) {
-      return function(originalDistance, elementSize) {
-        if (originalDistance === 0) {
-          return NaN;
-        }
-        else {
-          return (param_scale*1.0)/originalDistance + param_offset;
-        }
-      }
-    },
-    exponential: function(param_scale=0.1, param_offset=0.0, param_power=undefined) {
-      return function(originalDistance, elementSize) {
-        return Math.exp(param_scale-originalDistance) + param_offset;
-      }
-    },
-    powerInverse: function(param_scale=0.02, param_offset=0.0, param_power=0.6) {
-      return function(originalDistance, elementSize) {
-        if (originalDistance === 0) {
-          return NaN;
-        }
-        else {
-          return ((param_scale*1.0)/Math.pow(originalDistance*1.0, param_power) + param_offset);
-        }
-      }
-    }
   }
 }
