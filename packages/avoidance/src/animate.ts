@@ -4,22 +4,31 @@ import { floatToPctStr } from './util';
 const FRAME_DURATION = 10.0;
 
 // Timing functions
+export enum BuiltinTimingFnBuilderKey {
+  linear = "linear",
+  easeOutCubic = "easeOutCubic",
+  easeOutExpo = "easeOutExpo",
+}
 type TimingFn = (t: number) => number;
 type TimingFnBuilder = (duration: number) => TimingFn;
-interface TimingFnBuilderMap {
-  [key: string]: TimingFnBuilder;
+type TimingFnBuilderMap = {
+  [key in BuiltinTimingFnBuilderKey]: TimingFnBuilder;
 }
 export const timings: TimingFnBuilderMap = {
   linear: (duration: number) => (t: number) => t/duration,
   easeOutCubic: (duration: number) => (t: number) => 1+Math.pow(t/duration-1, 3),
-  easeOutExpo: duration => t => 1-Math.pow(2, -10*t/duration),
+  easeOutExpo: (duration: number) => (t: number) => 1-Math.pow(2, -10*t/duration),
 }
 
 // Path functions
+export enum BuiltinPathingFnBuilderKey {
+  linear = "linear",
+  bezierQuad = "bezierQuad",
+}
 type PathFn = (s: number) => IPoint;
 type PathFnBuilder = (controlPoints: Array<IPoint>) => PathFn;
-interface PathFnBuilderMap {
-  [key: string]: PathFnBuilder;
+type PathFnBuilderMap = {
+  [key in BuiltinPathingFnBuilderKey]: PathFnBuilder;
 }
 export const paths: PathFnBuilderMap = {
   linear: function([p0, p1]) {

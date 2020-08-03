@@ -1,15 +1,18 @@
-export enum DisplacementFactorMethodKeys {
+export enum BuiltinDisplacementMethodBuilderKey {
   inverse = "inverse",
   exponential = "exponential",
   powerInverse = "powerInverse",
 }
-
-type DisplacementFactorFn = (originalDistance: number, elementSize: number) => number;
-type DisplacementFactorMethod = (scale: number, offset?: number, power?: number) => DisplacementFactorFn;
-type DisplacementFactorMethodsMap = {
-  [key in DisplacementFactorMethodKeys]: DisplacementFactorMethod;
+export function isBuiltinDisplacementMethodBuilderKey(obj: unknown): obj is BuiltinDisplacementMethodBuilderKey {
+  return Object.values(BuiltinDisplacementMethodBuilderKey).includes(obj as any);
 }
-export const builtinDisplacementFactorMethods: DisplacementFactorMethodsMap = {
+
+export type DisplacementMethod = (originalDistance: number, elementSize: number) => number;
+export type DisplacementMethodBuilder = (scale: number, offset?: number, power?: number) => DisplacementMethod;
+type DisplacementMethodBuilderMap = {
+  [key in BuiltinDisplacementMethodBuilderKey]: DisplacementMethodBuilder;
+}
+export const builtinDisplacementMethodBuilders: DisplacementMethodBuilderMap = {
   inverse: function(scale=0.02, offset=0.0, power=undefined) {
     return function(originalDistance, elementSize) {
       if (originalDistance === 0) {

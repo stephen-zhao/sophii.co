@@ -39,8 +39,8 @@ export class Particle {
 
   getPosRatio(): IPositionRatio {
     // Get position as percentage of container to get built-in responsiveness!
-    const elementRect = this.element.getBoundingClientRect();
-    const containerRect = this.container.getBoundingClientRect();
+    const elementRect = this._element.getBoundingClientRect();
+    const containerRect = this._container.getBoundingClientRect();
     return {
       x: (elementRect.left - containerRect.left) / containerRect.width,
       y: (elementRect.top - containerRect.top) / containerRect.height,
@@ -48,8 +48,8 @@ export class Particle {
   }
   getSizeRatio(): ISizeRatio {
     // Get size as percentage of container to get built-in responsiveness!
-    const elementRect = this.element.getBoundingClientRect();
-    const containerRect = this.container.getBoundingClientRect();
+    const elementRect = this._element.getBoundingClientRect();
+    const containerRect = this._container.getBoundingClientRect();
     return {
       width: elementRect.width / containerRect.width,
       height: elementRect.height / containerRect.height,
@@ -62,14 +62,14 @@ export class Particle {
 
   private _frozenStyledPosition?: string; // a CSSStyleDeclaration.position
   unfreeze() {
-    this._frozenStyledPosition = this.element.style.position;
+    this._frozenStyledPosition = this._element.style.position;
     const delayedUnfreezeActions = (() => {
-      this.element.style.position = 'absolute';
-      this.container.removeEventListener('mousemove', delayedUnfreezeActions);
+      this._element.style.position = 'absolute';
+      this._container.removeEventListener('mousemove', delayedUnfreezeActions);
     }).bind(this);
-    this.container.addEventListener('mousemove', delayedUnfreezeActions);
+    this._container.addEventListener('mousemove', delayedUnfreezeActions);
   }
   freeze() {
-    this.element.style.position = this.element.style.position;
+    this._element.style.position = this._element.style.position;
   }
 }

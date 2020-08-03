@@ -1,16 +1,19 @@
 import { IPoint, getRadius } from './geometry'
 
-export enum ThresholdingMethodKeys {
+export enum BuiltinThresholdingMethodBuilderKey {
   threshold = "threshold",
   noThreshold = "noThreshold",
 }
-
-type ThresholdingFn = (directionUnitVector: IPoint, avoidanceFactor: number) => IPoint | null;
-type ThresholdingMethod = (thresholdRadius?: number) => ThresholdingFn;
-type ThresholdingMethodsMap = {
-  [key in ThresholdingMethodKeys]: ThresholdingMethod;
+export function isBuiltinThresholdingMethodBuilderKey(obj: unknown): obj is BuiltinThresholdingMethodBuilderKey {
+  return Object.values(BuiltinThresholdingMethodBuilderKey).includes(obj as any);
 }
-export const builtinThresholdingMethods: ThresholdingMethodsMap = {
+
+type ThresholdingMethod = (directionUnitVector: IPoint, avoidanceFactor: number) => IPoint | null;
+type ThresholdingMethodBuilder = (thresholdRadius?: number) => ThresholdingMethod;
+type BuiltinThresholdingMethodBuildersMap = {
+  [key in BuiltinThresholdingMethodBuilderKey]: ThresholdingMethodBuilder;
+}
+export const builtinThresholdingMethodBuilders: BuiltinThresholdingMethodBuildersMap = {
   threshold: function(thresholdRadius=0.1) {
     return function(directionUnitVector: IPoint, avoidanceFactor: number) {
       if (avoidanceFactor === NaN) {
