@@ -20,17 +20,17 @@ Choose one of the following script tags to add directly to your HTML.
 
 ```html
 <!-- Get a specific version -->
-<script src="https://cdn.jsdelivr.net/npm/@zhaostephen/avoidance@0.1.0/dist/draggamil.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@zhaostephen/draggamil@0.1.0/dist/draggamil.min.js"></script>
 
 <!-- Get patch fixes within the minor version -->
-<script src="https://cdn.jsdelivr.net/npm/@zhaostephen/avoidance@0.1/dist/draggamil.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@zhaostephen/draggamil@0.1/dist/draggamil.min.js"></script>
 
 <!-- Get minor updates and patch fixes within the major version -->
-<script src="https://cdn.jsdelivr.net/npm/@zhaostephen/avoidance@0/dist/draggamil.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@zhaostephen/draggamil@0/dist/draggamil.min.js"></script>
 
 <!-- Always get the latest version -->
 <!-- Not recommended for production sites! Only use if you know what you're doing. -->
-<script src="https://cdn.jsdelivr.net/npm/@zhaostephen/avoidance/dist/draggamil.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@zhaostephen/draggamil/dist/draggamil.min.js"></script>
 ```
 
 ### To install to a Node.js project:
