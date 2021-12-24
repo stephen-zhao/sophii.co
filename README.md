@@ -1,6 +1,6 @@
 # sophii.co working files
 
-This repo is a collection of javascript files to support the website [sophii.co](https://sophii.co). There are scripts for ["avoidance cloud" effect](https://github.com/stephen-zhao/sophii.co/tree/master/packages/avoidance) and for creating a scrollwheel side-scrolling page.
+This repo is a collection of javascript files to support the website [sophii.co](https://sophii.co). There are scripts which manage a ["avoidance cloud" effect](https://github.com/stephen-zhao/sophii.co/tree/master/packages/avoidance), which control touch-friendly draggable elements, and which create a dynamic horizontally-scrollable page.
 
 
 ## Quick Start
@@ -29,6 +29,17 @@ See the instructions below for each specific script and how to access the entry 
 
 For details about features, usage, and roadmap, see the [**avoidance.js** repo homepage](https://github.com/stephen-zhao/sophii.co/tree/master/packages/avoidance).
 
+### draggamil.js
+
+<p align="center">
+    Make HTML elements draggable by touch and mouse.
+</p>
+<p align="center">
+  <a href="https://badge.fury.io/js/%40zhaostephen%2Fdraggamil"><img src="https://badge.fury.io/js/%40zhaostephen%2Fdraggamil.svg" alt="npm version" height="18"></a>
+</p>
+
+For details about features, usage, and roadmap, see the [**draggamil.js** repo homepage](https://github.com/stephen-zhao/sophii.co/tree/master/packages/draggamil).
+
 ### gallery-case-scroll.js
 
 > Note: This script is not yet available in the general library form, and therefore cannot yet be conveniently used. A library-ification is scheduled to be done eventually.
@@ -45,6 +56,8 @@ Use the following code in your HTML to import the script via CDN, after jQuery i
 
 - `avoidance.js`:
   - See [TODO](https://github.com/stephen-zhao/sophii.co/tree/master/packages/avoidance#todo)
+- `draggamil.js`:
+  - See [TODO](https://github.com/stephen-zhao/sophii.co/tree/master/packages/draggamil#todo)
 - `gallery-case-scroll.js`:
   - needs library-ification
   - needs documentation
@@ -54,7 +67,7 @@ Use the following code in your HTML to import the script via CDN, after jQuery i
 ## Extra Usage Tips
 
 The javascript needs to execute after DOM has loaded for it to register all of the elements that it needs to work with.
-To do this, either use jQuery's `$(...)` function, like so:
+To do this, either use jQuery's `$(...)` function, like so (this depends on jQuery):
 
 ```html
 <script>
@@ -64,7 +77,7 @@ To do this, either use jQuery's `$(...)` function, like so:
 </script>
 ```
 
-or place a self-executing function at the end of the HTML body, like so:
+or place a self-executing function at the end of the HTML body, like so (this is browser-native):
 
 ```html
 <html>
