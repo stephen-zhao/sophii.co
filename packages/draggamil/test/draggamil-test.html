@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <style>
+      body, div {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+
+      .container {
+        width: 100%;
+        height: 100%;
+        border: 5px solid goldenrod;
+      }
+
+      .draggable {
+        width: 50px;
+        height: 50px;
+        position: absolute;
+        background-color: firebrick;
+        border: 5px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="draggable"></div>
+      <div class="draggable"></div>
+      <div class="draggable"><div id="drag-me-sticker">Drag Me!!</div></div>
+      <div class="draggable"></div>
+    </div>
+    <script src="../dist/draggamil.min.js"></script>
+    <script>
+      (function() {
+        Draggamil(".container", ".draggable");
+      })();
+    </script>
+  </body>
+</html>
