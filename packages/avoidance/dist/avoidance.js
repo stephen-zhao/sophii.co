@@ -1,46 +1,46 @@
-// avoidance.js v0.2.3  | (c) 2020 Stephen Zhao | GNU GPLv3 License | https://github.com/stephen-zhao/sophii.co
+// avoidance.js v0.2.3  | (c) 2026 Stephen Zhao | GNU GPLv3 License | https://github.com/stephen-zhao/sophii.co
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global = global || self, global.Avoidance = factory());
-}(this, (function () { 'use strict';
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Avoidance = factory());
+})(this, (function () { 'use strict';
 
-  function _typeof(obj) {
+  function _classCallCheck(a, n) {
+    if (!(a instanceof n)) throw new TypeError("Cannot call a class as a function");
+  }
+  function _defineProperties(e, r) {
+    for (var t = 0; t < r.length; t++) {
+      var o = r[t];
+      o.enumerable = o.enumerable || !1, o.configurable = !0, "value" in o && (o.writable = !0), Object.defineProperty(e, _toPropertyKey(o.key), o);
+    }
+  }
+  function _createClass(e, r, t) {
+    return r && _defineProperties(e.prototype, r), t && _defineProperties(e, t), Object.defineProperty(e, "prototype", {
+      writable: !1
+    }), e;
+  }
+  function _toPrimitive(t, r) {
+    if ("object" != typeof t || !t) return t;
+    var e = t[Symbol.toPrimitive];
+    if (void 0 !== e) {
+      var i = e.call(t, r || "default");
+      if ("object" != typeof i) return i;
+      throw new TypeError("@@toPrimitive must return a primitive value.");
+    }
+    return ("string" === r ? String : Number)(t);
+  }
+  function _toPropertyKey(t) {
+    var i = _toPrimitive(t, "string");
+    return "symbol" == typeof i ? i : i + "";
+  }
+  function _typeof(o) {
     "@babel/helpers - typeof";
 
-    if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-      _typeof = function (obj) {
-        return typeof obj;
-      };
-    } else {
-      _typeof = function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-      };
-    }
-
-    return _typeof(obj);
-  }
-
-  function _classCallCheck(instance, Constructor) {
-    if (!(instance instanceof Constructor)) {
-      throw new TypeError("Cannot call a class as a function");
-    }
-  }
-
-  function _defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-
-  function _createClass(Constructor, protoProps, staticProps) {
-    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) _defineProperties(Constructor, staticProps);
-    return Constructor;
+    return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
+      return typeof o;
+    } : function (o) {
+      return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+    }, _typeof(o);
   }
 
   // avoidance.js
@@ -77,43 +77,39 @@
     function Avoidance(containerSelector) {
       var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
       var addChildrenAsParticles = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-
       _classCallCheck(this, Avoidance);
-
       // save the containers
       var containersCollection = document.querySelectorAll(containerSelector);
-      this.containers = Array.prototype.slice.call(containersCollection); // save options for future use
-
-      this.options = this.initOptions(options); // init tracked particles
-
+      this.containers = Array.prototype.slice.call(containersCollection);
+      // save options for future use
+      this.options = this.initOptions(options);
+      // init tracked particles
       this.trackedParticles = [];
-      this.trackedParticleElementsSet = new Set(); // "fix" event listeners
-
+      this.trackedParticleElementsSet = new Set();
+      // "fix" event listeners
       this.mouseMoveHandler = this.mouseMoveHandler.bind(this);
       this.clickHandler = this.clickHandler.bind(this);
       this.touchStartHandler = this.touchStartHandler.bind(this);
-      this.touchEndHandler = this.touchEndHandler.bind(this); // Create particles from all of the container's children
+      this.touchEndHandler = this.touchEndHandler.bind(this);
+      // Create particles from all of the container's children
       // and add them to the list of tracked particles, if specified to do so
-
       if (addChildrenAsParticles) {
         this.containers.forEach(function (container) {
           for (var i = 0; i < container.children.length; ++i) {
             this.startTrackingParticleElement(container.children[i], container);
           }
         }, this);
-      } // set the initial status
-
-
+      }
+      // set the initial status
       this.status = "ready";
     }
-
-    _createClass(Avoidance, [{
+    return _createClass(Avoidance, [{
       key: "initOptions",
       value: function initOptions(userOptions) {
-        var options = {}; // Process factorMethod option
+        var options = {};
 
+        // Process factorMethod option
         options.factorMethod = {};
-
         if ("factorMethod" in userOptions) {
           if (typeof userOptions.factorMethod === "string" && userOptions.factorMethod in Avoidance.calculateAvoidanceFactor.builtinMethods) {
             options.factorMethod.name = userOptions.factorMethod;
@@ -126,19 +122,16 @@
             } else {
               options.factorMethod.name = undefined;
             }
-
             if ("scale" in userOptions.factorMethod && typeof userOptions.factorMethod.scale === "number") {
               options.factorMethod.scale = userOptions.factorMethod.scale;
             } else {
               options.factorMethod.scale = undefined;
             }
-
             if ("offset" in userOptions.factorMethod && typeof userOptions.factorMethod.offset === "number") {
               options.factorMethod.offset = userOptions.factorMethod.offset;
             } else {
               options.factorMethod.offset = undefined;
             }
-
             if ("power" in userOptions.factorMethod && typeof userOptions.factorMethod.power === "number") {
               options.factorMethod.power = userOptions.factorMethod.power;
             } else {
@@ -150,11 +143,10 @@
             options.factorMethod.offset = undefined;
             options.factorMethod.power = undefined;
           }
-        } // Process displacementMethod
+        }
 
-
+        // Process displacementMethod
         options.displacementMethod = {};
-
         if ("displacementMethod" in userOptions) {
           if (typeof userOptions.displacementMethod === "string" && userOptions.displacementMethod in Avoidance.calculateAvoidanceDisplacement.builtinMethods) {
             options.displacementMethod.name = userOptions.displacementMethod;
@@ -165,7 +157,6 @@
             } else {
               options.displacementMethod.name = undefined;
             }
-
             if ("thresholdRadius" in userOptions.displacementMethod && typeof userOptions.displacementMethod.thresholdRadius === "number") {
               options.displacementMethod.thresholdRadius = userOptions.displacementMethod.thresholdRadius;
             } else {
@@ -175,29 +166,27 @@
             options.displacementMethod.name = undefined;
             options.displacementMethod.thresholdRadius = undefined;
           }
-        } // Process timings
+        }
 
-
+        // Process timings
         if ("timing" in userOptions && typeof userOptions.timing === "string" && userOptions.timing in Avoidance.animate.timings) {
           options.timing = Avoidance.animate.timings[userOptions.timing];
         } else {
           options.timing = Avoidance.animate.timings.easeOutExpo;
-        } // Process pathing
+        }
 
-
+        // Process pathing
         if ("pathing" in userOptions && typeof userOptions.pathing === "string" && userOptions.pathing in Avoidance.animate.paths) {
           options.pathing = userOptions.pathing;
         } else {
           options.pathing = "bezierQuad";
         }
-
         return options;
       }
     }, {
       key: "addParticles",
       value: function addParticles(particleSelector, containerSelector) {
         var _this = this;
-
         document.querySelectorAll(particleSelector).forEach(function (particleElement) {
           _this.startTrackingParticleElement(particleElement, containerSelector ? document.querySelector(containerSelector) : undefined);
         }, this);
@@ -224,7 +213,6 @@
           if (!containerElement) {
             containerElement = document.body;
           }
-
           var particle = new Avoidance.Particle(particleElement, containerElement);
           this.trackedParticles.push(particle);
           this.trackedParticleElementsSet.add(particleElement);
@@ -239,11 +227,10 @@
           var foundIdx = this.trackedParticles.findIndex(function (particle) {
             return particle.element === particleElement;
           });
-
           if (foundIdx !== -1) {
             // Then dispose
-            this.trackedParticles[foundIdx].dispose(); // Then remove from tracked particles
-
+            this.trackedParticles[foundIdx].dispose();
+            // Then remove from tracked particles
             this.trackedParticles.splice(foundIdx, 1);
           }
         }
@@ -252,19 +239,17 @@
       key: "stopTrackingParticleElements",
       value: function stopTrackingParticleElements(particleElements) {
         var particleElementSet = new Set(particleElements);
-
         for (var i = 0; i < this.trackedParticles.length; ++i) {
           if (particleElementSet.has(this.trackedParticles[i].element)) {
             // First remove from lookup set
-            this.trackedParticleElementsSet["delete"](this.trackedParticles[i].element); // Then dispose
-
-            this.trackedParticles[i].dispose(); // Then remove from tracked particles
-
+            this.trackedParticleElementsSet["delete"](this.trackedParticles[i].element);
+            // Then dispose
+            this.trackedParticles[i].dispose();
+            // Then remove from tracked particles
             this.trackedParticles[i] = "removed";
           }
-        } // Realize the removal
-
-
+        }
+        // Realize the removal
         this.trackedParticles = this.trackedParticles.filter(function (particle) {
           return particle !== "removed";
         });
@@ -273,8 +258,8 @@
       key: "start",
       value: function start() {
         // Add all event handlers to each container
-        this.containers.forEach(this.registerEventHandlers, this); // Let particles know movement has started
-
+        this.containers.forEach(this.registerEventHandlers, this);
+        // Let particles know movement has started
         this.trackedParticles.forEach(function (particle) {
           particle.unfreeze();
         });
@@ -286,8 +271,8 @@
         // Let all particles know to stop
         this.trackedParticles.forEach(function (particle) {
           particle.freeze();
-        }); // remove all event handlers from each container
-
+        });
+        // remove all event handlers from each container
         this.containers.forEach(this.deregisterEventHandlers, this);
         this.status = "stopped";
       }
@@ -300,20 +285,17 @@
         containersCollection.forEach(function (container) {
           // Only add if not already added
           var idx = this.containers.indexOf(container);
-
           if (idx >= 0) {
             return;
           }
-
-          this.containers.push(container); // Add children as particles if specified to do so
-
+          this.containers.push(container);
+          // Add children as particles if specified to do so
           if (addChildrenAsParticles) {
             for (var i = 0; i < container.children.length; ++i) {
               this.startTrackingParticleElement(container.children[i]);
             }
-          } // Register handlers if we are already running
-
-
+          }
+          // Register handlers if we are already running
           if (this.status === "running") {
             this.registerEventHandlers(container);
           }
@@ -328,22 +310,18 @@
         containersCollection.forEach(function (container) {
           // Process only if the container is tracked
           var idx = this.containers.indexOf(container);
-
           if (idx < 0) {
             return;
-          } // Remove children as particles if specified to do so
-
-
+          }
+          // Remove children as particles if specified to do so
           if (removeChildrenAsParticles) {
             this.stopTrackingParticleElements(container.children);
-          } // Deregister events if we are running
-
-
+          }
+          // Deregister events if we are running
           if (this.status === "running") {
             this.deregisterEventHandlers(container);
-          } // Remove from tracked containers
-
-
+          }
+          // Remove from tracked containers
           this.containers.splice(idx, 1);
         }, this);
       }
@@ -432,11 +410,9 @@
             x: particle.originalPosRatio.x + avoidanceDisplacement.x,
             y: particle.originalPosRatio.y + avoidanceDisplacement.y
           };
-
           if (particle.element.style.display === "none") {
             particle.element.style.display = "";
           }
-
           particle.element.style.left = Avoidance.math.toPctStr(particleNewPos.x);
           particle.element.style.top = Avoidance.math.toPctStr(particleNewPos.y);
         }
@@ -452,11 +428,9 @@
             x: particle.originalPosRatio.x + avoidanceDisplacement.x,
             y: particle.originalPosRatio.y + avoidanceDisplacement.y
           };
-
           if (particle.element.style.display === "none") {
             particle.element.style.display = "";
           }
-
           var pathing = this.options.pathing === "bezierQuad" ? Avoidance.animate.paths.bezierQuad(particleOldPosRatio, particle.originalPosRatio, particleNewPosRatio) : Avoidance.animate.paths.linear(particleOldPosRatio, particleNewPosRatio);
           Avoidance.animate.move(particle.element, pathing, 1000, this.options.timing);
         }
@@ -467,15 +441,12 @@
         if (method === undefined) {
           method = this.options.factorMethod.name;
         }
-
         var methodFn = null;
-
         if (method !== undefined) {
           methodFn = Avoidance.calculateAvoidanceFactor.builtinMethods[method];
         } else {
           methodFn = Avoidance.calculateAvoidanceFactor.builtinMethods.powerInverse;
         }
-
         return methodFn(this.options.factorMethod.scale, this.options.factorMethod.offset, this.options.factorMethod.power)(originalDistance, elementSize);
       }
     }, {
@@ -484,20 +455,15 @@
         if (method === undefined) {
           method = this.options.displacementMethod.name;
         }
-
         var methodFn = null;
-
         if (method !== undefined) {
           methodFn = Avoidance.calculateAvoidanceDisplacement.builtinMethods[method];
         } else {
           methodFn = Avoidance.calculateAvoidanceDisplacement.builtinMethods.threshold;
         }
-
         return methodFn(this.options.displacementMethod.thresholdRadius)(particleOrigPosRelMouse, avoidanceFactor);
       }
     }]);
-
-    return Avoidance;
   }();
   Avoidance.geometry = {
     getDistance: function getDistance(pointA, pointB) {
@@ -556,12 +522,10 @@
           if (avoidanceFactor === NaN) {
             return null;
           }
-
           var offset = {
             x: directionUnitVector.x * avoidanceFactor,
             y: directionUnitVector.y * avoidanceFactor
           };
-
           if (Avoidance.geometry.getRadius(offset) > param_threshold_radius) {
             return {
               x: directionUnitVector.x * param_threshold_radius,
@@ -577,7 +541,6 @@
           if (avoidanceFactor === NaN) {
             return null;
           }
-
           return {
             x: directionUnitVector.x * avoidanceFactor,
             y: directionUnitVector.y * avoidanceFactor
@@ -630,7 +593,6 @@
     },
     move: function move(element, pathing, duration, timing) {
       var _this2 = this;
-
       var time = 0;
       var distance = 0;
       var distanceFromTime = timing(duration);
@@ -638,31 +600,27 @@
         // Check for final condition
         if (time >= duration) {
           clearInterval(animation);
-        } // Calculate position
-
-
-        var pos = pathing(distance); // Render
-
+        }
+        // Calculate position
+        var pos = pathing(distance);
+        // Render
         element.style.left = Avoidance.math.toPctStr(pos.x);
-        element.style.top = Avoidance.math.toPctStr(pos.y); // Update vars for next iteration
-
+        element.style.top = Avoidance.math.toPctStr(pos.y);
+        // Update vars for next iteration
         time = time + _this2.FRAME_DURATION;
         distance = distanceFromTime(time);
       }, this.FRAME_DURATION);
     }
   };
-
   Avoidance.Particle = /*#__PURE__*/function () {
     function _class(element, container) {
       _classCallCheck(this, _class);
-
       // Save both elements
       this.element = element;
       this.container = container;
       this.originalPosRatio = this.getPosRatio();
     }
-
-    _createClass(_class, [{
+    return _createClass(_class, [{
       key: "getPosRatio",
       value: function getPosRatio() {
         // Get position as percentage of container to get built-in responsiveness!
@@ -686,21 +644,18 @@
       }
     }, {
       key: "dispose",
-      value: function dispose() {// TODO: return particle to original location, either by setting style or removing location style
+      value: function dispose() {
+        // TODO: return particle to original location, either by setting style or removing location style
       }
     }, {
       key: "unfreeze",
       value: function unfreeze() {
         var _this3 = this;
-
         this.frozenStyledPosition = this.element.style.position;
-
         var delayedUnfreezeActions = function () {
           _this3.element.style.position = 'absolute';
-
           _this3.container.removeEventListener('mousemove', delayedUnfreezeActions);
         }.bind(this);
-
         this.container.addEventListener('mousemove', delayedUnfreezeActions);
       }
     }, {
@@ -709,11 +664,9 @@
         this.element.style.position = this.element.style.position;
       }
     }]);
-
-    return _class;
   }();
 
   return Avoidance;
 
-})));
+}));
 //# sourceMappingURL=avoidance.js.map
