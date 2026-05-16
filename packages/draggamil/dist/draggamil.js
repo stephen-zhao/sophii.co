@@ -1,4 +1,4 @@
-// draggamil.js v0.1.0  | (c) 2021 Stephen Zhao | GNU GPLv3 License | https://github.com/stephen-zhao/sophii.co
+// draggamil.js v0.1.1  | (c) 2026 Stephen Zhao | GNU GPLv3 License | https://github.com/stephen-zhao/sophii.co
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
@@ -26,7 +26,6 @@
         yOffset: 0
       };
       var initialZ = parseInt(window.getComputedStyle(dragItem).getPropertyValue('z-index')) ?? 0;
-
       if (initialZ > dragMaxZ) {
         dragMaxZ = initialZ;
       }
@@ -38,7 +37,6 @@
     container.addEventListener("mouseup", dragStop, false);
     container.addEventListener("mouseleave", dragStopIfLeavingContainer, false);
     container.addEventListener("mousemove", drag, false);
-
     function dragStart(e) {
       // Check if event target exists
       if (!e || !e.target) {
@@ -46,19 +44,15 @@
         dragStop();
         return;
       }
-
       const {
         dragItem,
         dragId
       } = getClosestDragItem(e.target) ?? {};
-
       if (!dragId) {
         dragStop();
         return;
       }
-
       var dragState = dragStates[dragId];
-
       if (e.type === "touchstart") {
         dragState.initialX = e.touches[0].clientX - dragState.xOffset;
         dragState.initialY = e.touches[0].clientY - dragState.yOffset;
@@ -66,40 +60,32 @@
         dragState.initialX = e.clientX - dragState.xOffset;
         dragState.initialY = e.clientY - dragState.yOffset;
       }
-
       ++dragMaxZ;
       dragItem.style['z-index'] = dragMaxZ;
       dragState.active = true;
     }
-
     function getClosestDragItem(el) {
       let dragId = el.getAttribute(ATTR_DRAG_ID);
-
       if (dragId) {
         return {
           dragItem: el,
           dragId
         };
       }
-
       const maybeAncestorEl = el.closest(itemsSelector);
       dragId = maybeAncestorEl.getAttribute(ATTR_DRAG_ID);
-
       if (dragId) {
         return {
           dragItem: maybeAncestorEl,
           dragId
         };
       }
-
       return undefined;
     }
-
     function dragStop() {
       // Stop all active drag states
       Object.keys(dragStates).forEach(function (dragId) {
         var dragState = dragStates[dragId];
-
         if (dragState.active) {
           dragState.initialX = dragState.currentX;
           dragState.initialY = dragState.currentY;
@@ -108,26 +94,20 @@
       });
       return;
     }
-
     function dragStopIfLeavingContainer(e) {
       if (container === e.target) {
         dragStop();
       }
     }
-
     function drag(e) {
       dragItems.forEach(function (dragItem) {
         var dragId = dragItem.getAttribute(ATTR_DRAG_ID);
-
         if (!dragId) {
           return;
         }
-
         var dragState = dragStates[dragId];
-
         if (dragState.active) {
           e.preventDefault();
-
           if (e.type === "touchmove") {
             dragState.currentX = e.touches[0].clientX - dragState.initialX;
             dragState.currentY = e.touches[0].clientY - dragState.initialY;
@@ -135,7 +115,6 @@
             dragState.currentX = e.clientX - dragState.initialX;
             dragState.currentY = e.clientY - dragState.initialY;
           }
-
           dragState.xOffset = dragState.currentX;
           dragState.yOffset = dragState.currentY;
           dragItem.style.transform = "translate3d(" + dragState.currentX + "px, " + dragState.currentY + "px, 0) " + dragState.initialTransform;
