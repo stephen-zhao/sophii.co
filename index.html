@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>sophii.co - test harness</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 760px; margin: 40px auto; padding: 0 20px; color: #222; }
+    h1 { margin-bottom: 4px; }
+    .sub { color: #777; margin-top: 0; }
+    h2 { margin-top: 36px; padding-bottom: 6px; border-bottom: 1px solid #ddd; }
+    ul { padding-left: 0; list-style: none; }
+    li { padding: 10px 12px; border: 1px solid #e5e5e5; border-radius: 6px; margin-bottom: 8px; }
+    li:hover { background: #fafafa; }
+    a { color: #0366d6; text-decoration: none; font-weight: 600; }
+    a:hover { text-decoration: underline; }
+    .desc { display: block; color: #555; font-weight: normal; font-size: 13px; margin-top: 4px; }
+    .tag { display: inline-block; font-size: 11px; padding: 2px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; font-weight: 500; }
+    .tag.local { background: #e0f0ff; color: #0366d6; }
+    .tag.cdn   { background: #fff3d6; color: #94650b; }
+    .note { background: #f6f8fa; border-left: 3px solid #0366d6; padding: 10px 14px; margin: 16px 0; border-radius: 4px; font-size: 14px; }
+    code { background: #f0f0f0; padding: 1px 6px; border-radius: 3px; font-size: 90%; }
+  </style>
+</head>
+<body>
+  <h1>sophii.co test harness</h1>
+  <p class="sub">Visual demos for the packages in this monorepo. Each demo is a static HTML page that loads its package's compiled build and exercises the API.</p>
+
+  <div class="note">
+    <strong>Serving:</strong> run <code>npm run serve</code> from the repo root, then open <a href="http://localhost:8080/">http://localhost:8080/</a>.
+    <br>
+    Tag legend:
+    <span class="tag local">local</span> loads the built <code>dist/</code> from this checkout -
+    <span class="tag cdn">cdn</span> loads the published version from jsDelivr.
+  </div>
+
+  <h2>avoidance.js - particle avoidance effect</h2>
+  <ul>
+    <li>
+      <a href="/packages/avoidance/test/avoidance-test.html">avoidance-test.html</a>
+      <span class="tag local">local</span>
+      <span class="desc">Four 500x500 particle containers, each with different physics parameters. Move your mouse to scatter the particles. Add/remove/stop-start buttons per container.</span>
+    </li>
+    <li>
+      <a href="/packages/avoidance/test/responsive-test.html">responsive-test.html</a>
+      <span class="tag local">local</span>
+      <span class="desc">Responsive-layout variant.</span>
+    </li>
+    <li>
+      <a href="/packages/avoidance/test/production-test.html">production-test.html</a>
+      <span class="tag cdn">cdn</span>
+      <span class="desc">Same demo, but loads <code>avoidance.min.js</code> from the published npm package via jsDelivr. Smoke-test that the production CDN copy still works.</span>
+    </li>
+  </ul>
+
+  <h2>draggamil.js - touch-friendly draggable elements</h2>
+  <ul>
+    <li>
+      <a href="/packages/draggamil/test/draggamil-test.html">draggamil-test.html</a>
+      <span class="tag local">local</span>
+      <span class="desc">Four red boxes in a goldenrod-bordered container. Click and drag (mouse or touch).</span>
+    </li>
+    <li>
+      <a href="/packages/draggamil/test/production-test.html">production-test.html</a>
+      <span class="tag cdn">cdn</span>
+      <span class="desc">Same demo, but loads <code>draggamil.min.js</code> from jsDelivr. Smoke-test that the production CDN copy still works.</span>
+    </li>
+  </ul>
+
+  <h2>avoidance-test - import-flavor smoke tests</h2>
+  <ul>
+    <li>
+      <a href="/packages/avoidance-test/public/esmodule-import-test.html">esmodule-import-test.html</a>
+      <span class="tag local">local</span>
+      <span class="desc">14 aquamarine circles in a full-viewport container, rendered via an ESM-bundled build of avoidance.</span>
+    </li>
+    <li>
+      <a href="/packages/avoidance-test/public/commonjs-import-test.html">commonjs-import-test.html</a>
+      <span class="tag local">local</span>
+      <span class="desc">Same as above, via the CommonJS bundle.</span>
+    </li>
+  </ul>
+
+  <p class="sub" style="margin-top:40px;">
+    Note: <code>helpers/avoidance-cloud.html</code> and <code>helpers/draggamil-docready.html</code> in this repo are 1-line embed snippets for CDN use, not standalone demos - they won't render anything visually on their own.
+  </p>
+</body>
+</html>
