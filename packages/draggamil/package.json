@@ -29,14 +29,14 @@
   "license": "GNU GPLv3",
   "devDependencies": {
     "@babel/cli": "^7.10.1",
-    "@babel/core": "^7.10.2",
+    "@babel/core": "^7.29.6",
     "@babel/preset-env": "^7.10.2",
     "@babel/preset-typescript": "^7.16.5",
     "@rollup/plugin-babel": "^5.0.4",
     "@rollup/plugin-commonjs": "^13.0.0",
     "@rollup/plugin-node-resolve": "^8.1.0",
-    "rollup": "^2.18.1",
     "@rollup/plugin-terser": "^1.0.0",
+    "rollup": "^2.18.1",
     "typescript": "^3.9.5"
   },
   "scripts": {
