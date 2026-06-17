@@ -14,5 +14,8 @@
   "private": true,
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "tmp": "^0.2.7"
+  }
 }
