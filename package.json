@@ -16,6 +16,7 @@
     "packages/*"
   ],
   "dependencies": {
+    "form-data": "^4.0.6",
     "tmp": "^0.2.7"
   }
 }
