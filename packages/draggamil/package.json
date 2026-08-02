@@ -44,5 +44,8 @@
     "build": "rollup -c",
     "start": "rollup -c --watch",
     "check-types": "tsc"
+  },
+  "dependencies": {
+    "brace-expansion": "^1.1.16"
   }
 }
